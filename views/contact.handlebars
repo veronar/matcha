@@ -1,18 +1,18 @@
-<form>
+<form action="/contactUs" method="POST">
 	<div class="form-group">
 		<label for="fullname">Full name</label>
-		<input type="text" class="form-control" id="fullname" placeholder="Enter full name">
+		<input type="text" name="fullname" class="form-control" id="fullname" placeholder="Enter full name">
 	</div>
 
 	<div class="form-group">
 		<label for="exampleInputEmail1">Email address</label>
-		<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+		<input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
 		<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
 	</div>
 
 	<div class="form-group">
 		<label for="message">Message</label>
-		<input type="text" class="form-control" id="message" placeholder="Type message...">
+		<input type="text" name="message" class="form-control" id="message" placeholder="Type message...">
 	</div>
 
 	<button type="submit" class="btn btn-primary">Submit</button>
