@@ -1,0 +1,26 @@
+{
+  "name": "matcha",
+  "version": "1.0.0",
+  "description": "Online Dating App",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/veronar/matcha.git"
+  },
+  "author": "vesingh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/veronar/matcha/issues"
+  },
+  "homepage": "https://github.com/veronar/matcha#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^3.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
