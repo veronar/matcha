@@ -2,9 +2,14 @@ const express = require("express");
 const exphbs = require("express-handlebars");
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+// const cookieParser = require('cookie-parser');
 
 //Load models
 const Message = require('./models/message');
+const User = require('./models/user');
 
 const app = express();
 
@@ -16,6 +21,19 @@ app.use(bodyParser.urlencoded({
 	extended: false
 }));
 app.use(bodyParser.json());
+
+//confirguration for authentication
+app.use(cookieParser());
+app.use(session({
+	secret: 'mysecret',
+	resave: true,
+	saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+//load Facebook strategy
+require('./passport/facebook');
 
 //connect to mLab MongoDB
 mongoose.connect(Keys.MongoDB, {
@@ -54,6 +72,14 @@ app.get('/contact', (req, res) => {
 	});
 });
 
+app.get('/auth/facebook', passport.authenticate('facebook', {
+	scope: ['email']
+}));
+app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+	successRedirect: '/profile',
+	failureRedirect: '/'
+}));
+
 app.post('/contactUs', (req, res) => {
 	console.log(req.body);
 	const newMessage = {
@@ -63,11 +89,11 @@ app.post('/contactUs', (req, res) => {
 		date: new Date()
 	}
 	new Message(newMessage).save((err, message) => {
-		if(err) {
+		if (err) {
 			throw err;
 		} else {
 			Message.find({}).then((messages) => {
-				if(messages) {
+				if (messages) {
 					res.render('newmessage', {
 						title: 'Sent',
 						messages: messages
