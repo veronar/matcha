@@ -2,16 +2,19 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
+	facebook: {
+		type: String
+	},
 	firstname: {
 		type: String
 	},
 	lastname: {
 		type: String
 	},
-	username: {
+	fullname: {
 		type: String
 	},
-	userImage: {
+	image: {
 		type: String
 	},
 	email: {

@@ -1,4 +1,17 @@
 <h1>Welcome to Matcha</h1>
-<a href="/auth/facebook">
-	<button type="button" class="btn btn-primary btn-lg">Login with Facebook</button>
-</a>
+{{#if user}}
+	<p>You are logged in</p>
+{{else}}
+	<h1>	
+		<a href="/auth/facebook">
+			<button type="button" class="btn btn-primary btn-lg">Login with Facebook</button>
+		</a>
+	</h1>
+
+	<h1>
+		<a href="/auth/google">
+			<button type="button" class="btn btn-danger btn-lg">Login with Google</button>
+		</a>
+	</h1>
+
+{{/if}}
