@@ -17,7 +17,10 @@ const app = express();
 const Keys = require('./config/keys');
 
 // Load helpers
-const {requireLogin, ensureGuest} = require('./helpers/auth');
+const {
+	requireLogin,
+	ensureGuest
+} = require('./helpers/auth');
 
 //use body-parser middleware
 app.use(bodyParser.urlencoded({
@@ -34,6 +37,9 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Setup express static folder to serve js & css files
+app.use(express.static('public'));
 
 // Make user global object
 app.use((req, res, next) => {
