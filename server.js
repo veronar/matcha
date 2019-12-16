@@ -146,6 +146,35 @@ app.get('/newAccount', (req, res) => {
 	});
 });
 
+// Handle signup form
+app.post('/signup', (req, res) => {
+	console.log(req.body);
+	let errors = [];
+
+	if (req.body.password !== req.body.password2) {
+		errors.push({
+			text: 'Passwords do not match'
+		});
+	}
+	if (req.body.password.length < 6) {
+		errors.push({
+			text: 'Password must be mininum 6 characters'
+		});
+	}
+	if (errors.length > 0) {
+		res.render('newAccount', {
+			errors: errors, 
+			title: 'Error',
+			fullname: req.body.username,
+			email: req.body.email,
+			password: req.body.password,
+			password2: req.body.password2
+		});
+	} else {
+		res.send('No Errors! Ready to create new account');
+	}
+});
+
 // Logout page
 app.get('/logout', (req, res) => {
 	User.findById({
