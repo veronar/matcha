@@ -43,6 +43,7 @@ app.use((req, res, next) => {
 
 //load Facebook strategy
 require('./passport/facebook');
+require('./passport/google');
 
 //connect to mLab MongoDB
 mongoose.connect(Keys.MongoDB, {
@@ -92,6 +93,14 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 	failureRedirect: '/'
 }));
 
+// Using passport to authenticate Google connection & user
+app.get('/auth/google', passport.authenticate('google', {
+	scope: ['profile']
+}));
+app.get('/auth/google/callback', passport.authenticate('google', {
+	successRedirect: '/profile',
+	failureRedirect: '/'
+}));
 
 // Profile page
 app.get('/profile', requireLogin, (req, res) => {
