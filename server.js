@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const flash = require('connect-flash');
 // const cookieParser = require('cookie-parser');
 
 //Load models
@@ -37,6 +38,15 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// connect-flash to flash messages
+app.use(flash());
+app.use((req, res, next) => {
+	res.locals.success_msg = req.flash('success_msg');
+	res.locals.error_msg = req.flash('error_msg');
+	res.locals.error = req.flash('error');
+	next();
+});
 
 // Setup express static folder to serve js & css files
 app.use(express.static('public'));
@@ -126,6 +136,13 @@ app.get('/profile', requireLogin, (req, res) => {
 				}
 			});
 		}
+	});
+});
+
+// Creating new Local account
+app.get('/newAccount', (req, res) => {
+	res.render('newAccount', {
+		title: 'Signup'
 	});
 });
 
