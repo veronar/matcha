@@ -61,6 +61,7 @@ app.use((req, res, next) => {
 //load Facebook strategy
 require('./passport/facebook');
 require('./passport/google');
+require('./passport/local');
 
 //connect to mLab MongoDB
 mongoose.connect(Keys.MongoDB, {
@@ -209,6 +210,22 @@ app.post('/signup', (req, res) => {
 			}
 		});
 	}
+});
+
+// Login page
+app.post('/login', passport.authenticate('local', {
+	successRedirect: '/profile',
+	failureRedirect: '/loginErrors'
+}));
+
+app.get('/loginErrors', (req, res) => {
+	let errors = [];
+	errors.push({
+		text: 'User not found or incorrect password' 
+	});
+	res.render('home', {
+		errors: errors
+	});
 });
 
 // Logout page

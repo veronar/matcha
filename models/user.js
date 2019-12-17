@@ -18,7 +18,8 @@ const userSchema = new Schema({
 		type: String
 	},
 	image: {
-		type: String
+		type: String,
+		default: '/img/user.png'
 	},
 	email: {
 		type: String
