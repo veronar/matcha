@@ -21,6 +21,13 @@
 
 		<form action="/login">
 
+			{{#each success}}
+			<div class="alert alert-success">
+				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+				{{text}}
+			</div>
+			{{/each}}
+
 			<div class="form-group">
 				<label for="email"> Email</label>
 				<input type="text" name="email" id="email" class="form-control">
