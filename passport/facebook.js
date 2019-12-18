@@ -16,7 +16,7 @@ passport.deserializeUser((id, done) => {
 passport.use(new FacebookStrategy({
 	clientID: keys.FacebookAppID,
 	clientSecret: keys.FacebookAppSecret,
-	callbackURL: 'http://localhost:3000/auth/facebook/callback',
+	callbackURL: 'https://stark-shore-41272.herokuapp.com/auth/facebook/callback',
 	profileFields: ['email', 'name', 'displayName', 'photos']
 }, (accessToken, refreshToken, profile, done) => {
 	console.log(profile);
