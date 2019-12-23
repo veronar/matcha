@@ -30,6 +30,16 @@ const userSchema = new Schema({
 	country: {
 		type: String
 	},
+	age: {
+		type: String
+	},
+	gender: {
+		type: String
+	},
+	about: {
+		type: String,
+		default: "Hmm I haven't bothered filling this in yet, a bot just wrote it out. Why don't you drop me a message, perhaps then I'll care about filling it in ;)"
+	},
 	online: {
 		type: Boolean,
 		default: false

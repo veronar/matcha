@@ -5,3 +5,7 @@
 .green {
 	color: green;
 }
+
+.fa-edit {
+	cursor: pointer;
+}

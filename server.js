@@ -167,6 +167,39 @@ app.get("/profile", requireLogin, (req, res) => {
 	});
 });
 
+// update profile page
+app.post('/updateProfile', requireLogin, (req, res) => {
+	User.findById({
+		_id: req.user._id
+	}).then((user) => {
+		user.fullname = req.body.fullname;
+		user.email = req.body.email;
+		user.gender = req.body.gender;
+		user.about = req.body.about;
+		user.save(() => {
+			res.redirect('/profile');
+		});
+	});
+});
+
+//confirmation delete account page
+app.get('/confirmDelete', (req, res) => {
+	res.render('confirmDelete', {
+		title: 'Delete Account'
+	});
+});
+
+// deleting the account page
+app.get('/deleteAccount', (req, res) => {
+	User.deleteOne({
+		_id: req.user._id
+	}).then(() => {
+		res.render('accDeleted', {
+			title: 'Deleted'
+		});
+	});
+});
+
 // Creating new Local account
 app.get("/newAccount", (req, res) => {
 	res.render("newAccount", {
