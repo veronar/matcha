@@ -183,14 +183,14 @@ app.post('/updateProfile', requireLogin, (req, res) => {
 });
 
 //confirmation delete account page
-app.get('/confirmDelete', (req, res) => {
+app.get('/confirmDelete', requireLogin, (req, res) => {
 	res.render('confirmDelete', {
 		title: 'Delete Account'
 	});
 });
 
 // deleting the account page
-app.get('/deleteAccount', (req, res) => {
+app.get('/deleteAccount', requireLogin, (req, res) => {
 	User.deleteOne({
 		_id: req.user._id
 	}).then(() => {
@@ -291,14 +291,14 @@ app.get("/loginErrors", (req, res) => {
 });
 
 // Handle get to upload images
-app.get("/uploadImage", (req, res) => {
+app.get("/uploadImage", requireLogin, (req, res) => {
 	res.render("uploadImage", {
 		title: "Upload"
 	});
 });
 
 // upload avatar
-app.post("/uploadAvatar", (req, res) => {
+app.post("/uploadAvatar", requireLogin, (req, res) => {
 	User.findById({
 		_id: req.user._id
 	}).then((user) => {
@@ -314,7 +314,7 @@ app.post("/uploadAvatar", (req, res) => {
 });
 
 //ajax upload image
-app.post("/uploadFile", uploadImage.any(), (req, res) => {
+app.post("/uploadFile", requireLogin, uploadImage.any(), (req, res) => {
 	const form = new formidable.IncomingForm();
 	form.on("file", (field, file) => {
 		console.log(file);
@@ -326,6 +326,18 @@ app.post("/uploadFile", uploadImage.any(), (req, res) => {
 		console.log("Image successfully uploaded!");
 	});
 	form.parse(req);
+});
+
+//handle get route for fidning users
+app.get('/singles', requireLogin, (req, res) => {
+	User.find({}).then((singles) => {
+		res.render('singles', {
+			title: 'Singles',
+			singles: singles
+		})
+	}).catch((err) => {
+		console.log(err);
+	});
 });
 
 // Logout page
