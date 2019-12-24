@@ -330,13 +330,29 @@ app.post("/uploadFile", requireLogin, uploadImage.any(), (req, res) => {
 
 //handle get route for fidning users
 app.get('/singles', requireLogin, (req, res) => {
-	User.find({}).then((singles) => {
-		res.render('singles', {
-			title: 'Singles',
-			singles: singles
+	User.find({})
+		.sort({
+			date: 'desc'
 		})
-	}).catch((err) => {
-		console.log(err);
+		.then((singles) => {
+			res.render('singles', {
+				title: 'Singles',
+				singles: singles
+			})
+		}).catch((err) => {
+			console.log(err);
+		});
+});
+
+// SIngle user prfile page
+app.get('/userProfile/:id', requireLogin, (req, res) => {
+	User.findById({
+		_id :req.params.id
+	}).then ((user) => {
+		res.render('userProfile', {
+			title: 'Profile',
+			oneUser: user
+		});
 	});
 });
 

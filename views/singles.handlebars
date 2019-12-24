@@ -1,11 +1,30 @@
 <div class="card-deck">
 	{{#each singles}}
 
+	{{#if online}}
+
 	<div class="card">
-
-		<img src="{{image}}" class="card-img-top">
-
+		<a href="/userProfile/{{_id}}">
+			<img src="{{image}}" class="card-img-top">
+			<div class="card-body">
+				<h4>{{fullname}}</h4>
+				<p class="green">Online</p>
+			</div>
+		</a>
 	</div>
+
+	{{else}}
+	<div class="card">
+		<a href="/userProfile/{{_id}}">
+			<img src="{{image}}" class="card-img-top">
+			<div class="card-body">
+				<h4>{{fullname}}</h4>
+				<p class="red">Offline</p>
+			</div>
+		</a>
+	</div>
+
+	{{/if}}
 
 	{{else}}
 	<p>No users found</p>

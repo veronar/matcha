@@ -6,6 +6,10 @@
 	color: green;
 }
 
+.red {
+	color: red;
+}
+
 .fa-edit {
 	cursor: pointer;
 	margin-right: 20px;
