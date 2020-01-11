@@ -14,3 +14,11 @@
 	cursor: pointer;
 	margin-right: 20px;
 }
+
+.chatroom-users {
+	width: 64px;
+}
+
+#messages {
+	height: 300px;
+}

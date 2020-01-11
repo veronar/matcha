@@ -1,0 +1,58 @@
+<div class="container">
+
+	<div class="row">
+		<div class="col-lg-12" style="display: flex; justify-content: space-evenly; margin-top: 20px;">
+			<img src="{{chat.sender.image}}" class="card" width="100px">
+			<img src="{{chat.receiver.image}}" class="card" width="100px">
+		</div>
+	</div>
+
+	<div id="messages">
+		
+		{{#each chat}}
+		{{#each chats}}
+		{{#if senderMessage}}
+
+		<div class="media">
+
+			<img src="{{senderName.image}}" class="mr-3 chatroom-users" alt="...">
+
+			<div class="media-body">
+				<h5 class="mt-0">{{senderMessage}}</h5>
+				<small>{{date}}</small>
+			</div>
+
+		</div>
+		{{/if}}
+		{{/each}}
+		{{/each}}
+
+		<hr>
+
+		{{#each chat}}
+		{{#each chats}}
+		{{#if receiverMessage}}
+
+		<div class="media">
+
+			<img src="{{receiverName.image}}" class="mr-3 chatroom-users" alt="...">
+
+			<div class="media-body">
+				<h5 class="mt-0">{{receiverMessage}}</h5>
+				<small>{{date}}</small>
+			</div>
+
+		</div>
+		{{/if}}
+		{{/each}}
+		{{/each}}
+
+	</div>
+
+	<form action="/chat/{{chat._id}}" emthod="POST">
+		<input type="text" class="form-control" name="chat" placeholder="Type message...">
+		<br>
+		<button class="btn btn-primary" type="submit">Send</button>
+	</form>
+
+</div>

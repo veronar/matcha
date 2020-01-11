@@ -13,6 +13,7 @@ const formidable = require("formidable");
 //Load models
 const Message = require("./models/message");
 const User = require("./models/user");
+const Chat = require("./models/chat");
 
 const app = express();
 
@@ -72,8 +73,7 @@ require("./passport/google");
 require("./passport/local");
 
 //connect to mLab MongoDB
-mongoose
-	.connect(Keys.MongoDB, {
+mongoose.connect(Keys.MongoDB, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
@@ -347,13 +347,91 @@ app.get('/singles', requireLogin, (req, res) => {
 // SIngle user prfile page
 app.get('/userProfile/:id', requireLogin, (req, res) => {
 	User.findById({
-		_id :req.params.id
-	}).then ((user) => {
+		_id: req.params.id
+	}).then((user) => {
 		res.render('userProfile', {
 			title: 'Profile',
 			oneUser: user
 		});
 	});
+});
+
+//Start chat route
+app.get('/startChat/:id', requireLogin, (req, res) => {
+	Chat.findOne({
+		sender: req.params.id,
+		receiver: req.user._id
+	}).then((chat) => {
+		if (chat) {
+			chat.receiverRead = true;
+			chat.senderRead = false;
+			chat.date = new Date();
+			chat.save((err, chat) => {
+				if (err) {
+					console.log(err);
+				}
+				if (chat) {
+					res.redirect(`/chat/${chat._id}`);
+				}
+			});
+		} else {
+			Chat.findOne({
+				sender: req.user._id,
+				receiver: req.params.id
+			}).then((chat) => {
+				if (chat) {
+					chat.senderRead = true;
+					chat.receiverRead = false;
+					chat.date = new Date();
+					chat.save((err, chat) => {
+						if (err) {
+							console.log(err);
+						}
+						if (chat) {
+							res.redirect(`/chat/${chat._id}`);
+						}
+					});
+				} else {
+					const newChat = {
+						sender: req.user._id,
+						receiver: req.params.id,
+						senderRead: true,
+						receiverRead: false,
+						date: new Date()
+					};
+					new Chat(newChat).save((err, chat) => {
+						if (err) {
+							console.log(err);
+						}
+						if (chat) {
+							res.redirect(`/chat/${chat._id}`);
+						}
+					});
+				}
+			});
+		}
+	});
+});
+
+// display chat room
+app.get('/chat/:id', requireLogin, (req, res) => {
+	Chat.findById({
+			_id: req.params.id
+		}).populate('sender')
+		.populate('receiver')
+		.populate('chats.senderName')
+		.populate('chats.receiverName')
+		.then((chat) => {
+			User.findOne({
+				_id: req.user._id
+			}).then((user) => {
+				res.render('chatRoom', {
+					title: 'Chat',
+					user: user,
+					chat: chat
+				});
+			});
+		});
 });
 
 // Logout page
