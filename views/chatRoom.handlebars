@@ -2,32 +2,43 @@
 
 	<div class="row">
 		<div class="col-lg-12" style="display: flex; justify-content: space-evenly; margin-top: 20px;">
-			<img src="{{chat.sender.image}}" class="card" width="100px">
-			<img src="{{chat.receiver.image}}" class="card" width="100px">
+
+			<a href="/userProfile/{{chat.sender._id}}">
+				<img src="{{chat.sender.image}}" class="card" width="100px">
+			</a>
+
+			<a href="/userProfile/{{chat.receiver._id}}">
+				<img src="{{chat.receiver.image}}" class="card" width="100px">
+			</a>
+
 		</div>
 	</div>
 
-	<div id="messages">
-		
+	<div id="messages" style="margin-top: 50px;">
+
 		{{#each chat}}
 		{{#each chats}}
 		{{#if senderMessage}}
 
 		<div class="media">
 
-			<img src="{{senderName.image}}" class="mr-3 chatroom-users" alt="...">
+			<a href="/userProfile/{{senderName._id}}">
+				<img src="{{senderName.image}}" class="mr-3 chatroom-users" alt="...">
+			</a>
 
 			<div class="media-body">
 				<h5 class="mt-0">{{senderMessage}}</h5>
-				<small>{{date}}</small>
+				<small>{{getLastMoment date 'hour'}}</small>
 			</div>
 
 		</div>
+
+		<hr>
 		{{/if}}
 		{{/each}}
 		{{/each}}
 
-		<hr>
+
 
 		{{#each chat}}
 		{{#each chats}}
@@ -35,21 +46,24 @@
 
 		<div class="media">
 
-			<img src="{{receiverName.image}}" class="mr-3 chatroom-users" alt="...">
+			<a href="/userProfile/{{receiverName._id}}">
+				<img src="{{receiverName.image}}" class="mr-3 chatroom-users" alt="...">
+			</a>
 
 			<div class="media-body">
 				<h5 class="mt-0">{{receiverMessage}}</h5>
-				<small>{{date}}</small>
+				<small>{{getLastMoment date 'hour'}}</small>
 			</div>
 
 		</div>
+		<hr>
 		{{/if}}
 		{{/each}}
 		{{/each}}
 
 	</div>
 
-	<form action="/chat/{{chat._id}}" emthod="POST">
+	<form action="/chat/{{chat._id}}" method="POST">
 		<input type="text" class="form-control" name="chat" placeholder="Type message...">
 		<br>
 		<button class="btn btn-primary" type="submit">Send</button>

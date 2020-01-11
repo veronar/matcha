@@ -28,6 +28,9 @@ const {
 const {
 	uploadImage
 } = require("./helpers/aws");
+const {
+	getLastMoment
+} = require('./helpers/moment');
 
 //use body-parser middleware
 app.use(
@@ -91,7 +94,10 @@ const port = process.env.PORT || 3000;
 app.engine(
 	"handlebars",
 	exphbs({
-		defaultLayout: "main"
+		defaultLayout: "main",
+		helpers: {
+			getLastMoment: getLastMoment
+		}
 	})
 );
 app.set("view engine", "handlebars");
@@ -433,6 +439,137 @@ app.get('/chat/:id', requireLogin, (req, res) => {
 			});
 		});
 });
+
+// handiling submittin of messages in chatroom (form)
+app.post('/chat/:id', requireLogin, (req, res) => {
+	Chat.findOne({
+			_id: req.params.id,
+			sender: req.user._id
+		}).populate('sender')
+		.populate('receiver')
+		.populate('chats.senderName')
+		.populate('chats.receiverName')
+		.then((chat) => {
+			if (chat) {
+				//sender sends message here
+				chat.senderRead = true;
+				chat.receiverRead = false;
+				chat.date = new Date();
+
+				const newChat = {
+					senderName: req.user._id,
+					senderRead: true,
+					receiverName: chat.receiver._id,
+					receiverRead: false,
+					date: new Date(),
+					senderMessage: req.body.chat
+				};
+				chat.chats.push(newChat);
+				chat.save((err, chat) => {
+					if (err) {
+						throw err;
+					}
+					if (chat) {
+						Chat.findOne({
+								_id: chat._id
+							})
+							.sort({
+								date: 'desc'
+							})
+							.populate('sender')
+							.populate('receiver')
+							.populate('chats.senderName')
+							.populate('chats.receiverName')
+							.then((chat) => {
+								User.findById({
+									_id: req.user._id
+								}).then((user) => {
+									//charge client for each message
+									user.wallet = user.wallet - 1;
+									user.save((err, user) => {
+										if (err) {
+											throw err;
+										}
+										if (user) {
+											res.render('chatRoom', {
+												title: 'Chat',
+												chat: chat,
+												user: user
+											});
+										}
+									});
+								});
+							});
+					}
+				});
+			}
+			// receiver sends messages back
+			else {
+				Chat.findOne({
+						_id: req.params.id,
+						receiver: req.user._id
+					})
+					.sort({
+						date: 'desc'
+					})
+					.populate('sender')
+					.populate('receiver')
+					.populate('chats.senderName')
+					.populate('chats.receiverName')
+					.then((chat) => {
+						chat.senderRead = true;
+						chat.receiverRead = false;
+						chat.date = new Date();
+
+						const newChat = {
+							senderName: chat.sender._id,
+							senderRead: false,
+							receiverName: req.user._id,
+							receiverRead: true,
+							receiverMessage: req.body.chat,
+							date: new Date()
+						};
+						chat.chats.push(newChat);
+						chat.save((err, chat) => {
+							if (err) {
+								throw err;
+							}
+							if (chat) {
+								Chat.findOne({
+										_id: chat._id
+									})
+									.sort({
+										date: 'desc'
+									})
+									.populate('sender')
+									.populate('receiver')
+									.populate('chats.senderName')
+									.populate('chats.receiverName')
+									.then((chat) => {
+										User.findById({
+											_id: req.user._id
+										}).then((user) => {
+											user.wallet = user.wallet - 1;
+											user.save((err, user) => {
+												if (err) {
+													throw err;
+												}
+												if (user) {
+													res.render('chatRoom', {
+														title: 'Chat',
+														user: user,
+														chat: chat
+													});
+												}
+											});
+										});
+									});
+							}
+						});
+					});
+			}
+		});
+})
 
 // Logout page
 app.get("/logout", (req, res) => {
