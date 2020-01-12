@@ -164,9 +164,15 @@ app.get("/profile", requireLogin, (req, res) => {
 				if (err) {
 					throw err;
 				} else {
-					res.render("profile", {
-						title: "Profile",
-						user: user
+					Smile.findOne({
+						receiver: req.user._id,
+						receiverReceived: false
+					}).then((newSmile) => {
+						res.render("profile", {
+							title: "Profile",
+							user: user,
+							newSmile: newSmile
+						});
 					});
 				}
 			});
@@ -602,6 +608,28 @@ app.get('/deleteSmile/:id', requireLogin, (req, res) => {
 	}).then(() => {
 		res.redirect(`/userProfile/${req.params.id}`)
 	});
+});
+
+// Show smile sender
+app.get('/showSmile/:id', requireLogin, (req, res) => {
+	Smile.findOne({
+			_id: req.params.id
+		}).populate('sender')
+		.populate('receiver')
+		.then((smile) => {
+			smile.receiverReceived = true;
+			smile.save((err, smile) => {
+				if (err) {
+					throw err;
+				}
+				if (smile) {
+					res.render('smile/showSmile', {
+						title: 'New Smile',
+						smile: smile
+					});
+				}
+			});
+		});
 });
 
 // Logout page

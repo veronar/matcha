@@ -4,7 +4,25 @@
 		<img src="/img/matcha2.png" width="30" height="30">
 	</a>
 
+	{{#if newSmile}}
+	<a href="/showSmile/{{newSmile._id}}" class="red">
+		<i class="fa fa-smile-o" style="font-size: 35px;"></i>
+	</a>
+
+	<script>
+		$(document).ready(function () {
+			setInterval(function () {
+				$('.fa-smile-o').attr('style', 'color: red');
+			}, 10);
+			setInterval(function () {
+				$('.fa-smile-o').attr('style', 'color: white');
+			}, 30);
+		});
+	</script>
+
+	{{else}}
 	<a class="navbar-brand" href="#">{{title}}</a>
+	{{/if}}
 
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 		aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
