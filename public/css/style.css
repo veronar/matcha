@@ -23,3 +23,8 @@
 	height: 300px;
 	overflow-y: scroll;
 }
+
+#main-body {
+	margin-top: 80px;
+	margin-bottom: 60px;
+}

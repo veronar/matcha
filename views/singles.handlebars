@@ -1,27 +1,53 @@
-<div class="card-deck">
+<div class="row">
 	{{#each singles}}
 
 	{{#if online}}
 
-	<div class="card">
-		<a href="/userProfile/{{_id}}">
+	<div class="col-sm-4" style="margin-bottom: 35px;">
+		<div class="card">
+
 			<img src="{{image}}" class="card-img-top">
 			<div class="card-body">
-				<h4>{{fullname}}</h4>
+
+				<h5>{{fullname}}</h5>
+
+				<a href="/userProfile/{{_id}}">
+					<button class="btn btn-outline-primary"><i class="fa fa-address-book"></i></button>
+				</a>
+
+				<a href="/startChat/{{_id}}">
+					<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
+				</a>
+
 				<p class="green">Online</p>
+
 			</div>
-		</a>
+
+		</div>
 	</div>
 
 	{{else}}
-	<div class="card">
-		<a href="/userProfile/{{_id}}">
+	<div class="col-sm-4" style="margin-bottom: 35px;">
+		<div class="card">
+
 			<img src="{{image}}" class="card-img-top">
 			<div class="card-body">
-				<h4>{{fullname}}</h4>
+
+				<h5>{{fullname}}</h5>
+
+				<a href="/userProfile/{{_id}}">
+					<button class="btn btn-outline-primary"><i class="fa fa-address-book"></i></button>
+				</a>
+
+				<a href="/startChat/{{_id}}">
+					<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
+				</a>
+
 				<p class="red">Offline</p>
+
 			</div>
-		</a>
+
+		</div>
 	</div>
 
 	{{/if}}

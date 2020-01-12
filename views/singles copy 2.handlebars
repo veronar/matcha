@@ -1,0 +1,55 @@
+<div class="card-deck">
+	{{#each singles}}
+
+	{{#if online}}
+
+	<div class="card">
+
+		<img src="{{image}}" class="card-img-top">
+		<div class="card-body">
+
+			<h5>{{fullname}}</h5>
+
+			<a href="/userProfile/{{_id}}">
+				<button class="btn btn-outline-primary"><i class="fa fa-address-book"></i></button>
+			</a>
+
+			<a href="/startChat/{{_id}}">
+				<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
+			</a>
+
+			<p class="green">Online</p>
+
+		</div>
+
+	</div>
+
+	{{else}}
+	<div class="card">
+
+		<img src="{{image}}" class="card-img-top">
+		<div class="card-body">
+
+			<h5>{{fullname}}</h5>
+
+			<a href="/userProfile/{{_id}}">
+				<button class="btn btn-outline-primary"><i class="fa fa-address-book"></i></button>
+			</a>
+
+			<a href="/startChat/{{_id}}">
+				<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
+			</a>
+
+			<p class="red">Offline</p>
+
+		</div>
+
+	</div>
+
+	{{/if}}
+
+	{{else}}
+	<p>No users found</p>
+	<h1>hahahahah</h1>
+	{{/each}}
+</div>
