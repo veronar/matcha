@@ -26,12 +26,25 @@
 	</div>
 
 	<div class="col-sm" id="profile-info">
-		<h3>Profile</h3>
-		<h5 class="card-title"><i class="fa fa-user"></i> {{oneUser.fullname}}</h5>
-		<p class="card-text"><i class="fa fa-envelope"></i> {{oneUser.email}}</p>
-		<p class="card-text"><i class="fa fa-mars"> {{oneUser.gender}} </i></p>
-		<p class="card-text"><i class="fa fa-id-card"> {{oneUser.about}} </i></p>
+		{{!-- <h3>Profile</h3> --}}
+		<h3 class="card-title"> {{oneUser.fullname}}</h3>
+		<small class="text-muted">Location</small>
+		<hr>
+
+		<p class="card-text">
+			<i class="fa fa-envelope"></i> {{oneUser.email}}
+		</p>
+
+		<p class="card-text">
+			<i class="fa fa-venus-mars"></i> {{oneUser.gender}}
+		</p>
+
+		<p class="card-text">
+			<i class="fa fa-file-text-o"></i> {{oneUser.about}}
+		</p>
 		<br>
+
+		<hr>
 	</div>
 
 </div>

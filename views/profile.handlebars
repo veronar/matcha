@@ -14,17 +14,29 @@
 	</div>
 
 	<div class="col-sm" id="profile-info">
-		<h3>Profile</h3>
-		<h5 class="card-title"><i class="fa fa-user"></i> {{user.fullname}}</h5>
-		<p class="card-text"><i class="fa fa-envelope"></i> {{user.email}}</p>
-		<p class="card-text"><i class="fa fa-mars"> {{user.gender}} </i></p>
-		<p class="card-text"><i class="fa fa-id-card"> {{user.about}} </i></p>
+		{{!-- <h3>Profile</h3> --}}
+		<h3 class="card-title"> {{user.fullname}}</h3>
+		<small class="text-muted">Location</small>
+		<hr>
+
+		<p class="card-text">
+			<i class="fa fa-envelope"></i> {{user.email}}
+		</p>
+
+		<p class="card-text">
+			<i class="fa fa-venus-mars"></i> {{user.gender}}
+		</p>
+
+		<p class="card-text">
+			<i class="fa fa-file-text-o"></i> {{user.about}}
+		</p>
 		<br>
-		<h4>
-			<i class="fa fa-edit" onclick="editProfile()">Edit Profile</i>
-			<a href="/confirmDelete" style="color: red"><i class="fa fa-trash">Delete Profile</i></a>
-		</h4>
+
+		<hr>
+		<button class="btn btn-info" onclick="editProfile()">Edit Profile</button>
+		<a href="/confirmDelete" class="btn btn-danger">Delete Profile</a>
 	</div>
+
 
 	<div class="col-sm" id='profileEditor' style="display: none;">
 
