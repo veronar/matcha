@@ -14,6 +14,7 @@ const formidable = require("formidable");
 const Message = require("./models/message");
 const User = require("./models/user");
 const Chat = require("./models/chat");
+const Smile = require("./models/smile");
 
 const app = express();
 
@@ -350,19 +351,24 @@ app.get('/singles', requireLogin, (req, res) => {
 		});
 });
 
-// SIngle user prfile page
+// SIngle user profile page
 app.get('/userProfile/:id', requireLogin, (req, res) => {
 	User.findById({
 		_id: req.params.id
 	}).then((user) => {
-		res.render('userProfile', {
-			title: 'Profile',
-			oneUser: user
-		});
+		Smile.findOne({
+			receiver: req.params.id
+		}).then((smile) => {
+			res.render('userProfile', {
+				title: 'Profile',
+				oneUser: user,
+				smile: smile
+			});
+		})
 	});
 });
 
-//Start chat route
+//Start chat process / route
 app.get('/startChat/:id', requireLogin, (req, res) => {
 	Chat.findOne({
 		sender: req.params.id,
@@ -570,6 +576,33 @@ app.post('/chat/:id', requireLogin, (req, res) => {
 			}
 		});
 })
+
+// get route to send smile
+app.get('/sendSmile/:id', requireLogin, (req, res) => {
+	const newSmile = {
+		sender: req.user._id,
+		receiver: req.params.id,
+		senderSent: true
+	};
+	new Smile(newSmile).save((err, smile) => {
+		if (err) {
+			throw err;
+		}
+		if (smile) {
+			res.redirect(`/userProfile/${req.params.id}`);
+		}
+	});
+});
+
+// delte smile
+app.get('/deleteSmile/:id', requireLogin, (req, res) => {
+	Smile.deleteOne({
+		receiver: req.params.id,
+		sender: req.user._id
+	}).then(() => {
+		res.redirect(`/userProfile/${req.params.id}`)
+	});
+});
 
 // Logout page
 app.get("/logout", (req, res) => {
