@@ -4,6 +4,12 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user");
 const keys = require("../config/keys");
 
+var callback = "http://localhost:3000/auth/google/callback";
+if (process.env.NODE_ENV === 'production') {
+	callback = "https://stark-shore-41272.herokuapp.com/auth/google/callback";
+};
+
+
 passport.serializeUser((user, done) => {
 	return done(null, user.id);
 });
@@ -18,7 +24,7 @@ passport.use(
 	new GoogleStrategy({
 		clientID: keys.GoogleClientID,
 		clientSecret: keys.GoogleClientSecret,
-		callbackURL: "https://stark-shore-41272.herokuapp.com/auth/google/callback"
+		callbackURL: callback
 	}, (accessToken, refreshToken, profile, done) => {
 		console.log(profile);
 

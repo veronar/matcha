@@ -1,7 +1,13 @@
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
+
 const User = require('../models/user');
 const keys = require('../config/keys');
+
+var callback = "http://localhost:3000/auth/facebook/callback";
+if (process.env.NODE_ENV === 'production') {
+	callback = "https://stark-shore-41272.herokuapp.com/auth/facebook/callback";
+};
 
 passport.serializeUser((user, done) => {
 	done(null, user.id);
@@ -16,7 +22,7 @@ passport.deserializeUser((id, done) => {
 passport.use(new FacebookStrategy({
 	clientID: keys.FacebookAppID,
 	clientSecret: keys.FacebookAppSecret,
-	callbackURL: 'https://stark-shore-41272.herokuapp.com/auth/facebook/callback',
+	callbackURL: callback,
 	profileFields: ['email', 'name', 'displayName', 'photos']
 }, (accessToken, refreshToken, profile, done) => {
 	console.log(profile);
