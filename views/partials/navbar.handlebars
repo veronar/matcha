@@ -4,9 +4,11 @@
 		<img src="/img/matcha2.png" width="30" height="30">
 	</a>
 
+	<a class="navbar-brand" href="#">{{title}}</a>
+
 	{{#if newSmile}}
-	<a href="/showSmile/{{newSmile._id}}" class="red">
-		<i class="fa fa-smile-o" style="font-size: 35px;"></i>
+	<a href="/showSmile/{{newSmile._id}}" class="red" style="margin: 0 10px; font-size: 25px;">
+		<i class="fa fa-smile-o"></i>
 	</a>
 
 	<script>
@@ -21,11 +23,11 @@
 	</script>
 
 	{{else}}
-	<a class="navbar-brand" href="#">{{title}}</a>
+	{{!-- <a class="navbar-brand" href="#">{{title}}</a> --}}
 	{{/if}}
 
 	{{#if unread}}
-	<a href="/chats" class="navbar-brand">
+	<a href="/chats" class="navbar-brand" style="margin: 0 10px;">
 		<i class="fa fa-envelope-o" id="letter"></i>
 	</a>
 

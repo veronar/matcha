@@ -625,6 +625,15 @@ app.get('/chats', requireLogin, (req, res) => {
 		});
 });
 
+//Delete chat
+app.get('/deleteChat/:id', requireLogin, (req, res) => {
+	Chat.deleteOne({
+		_id: req.params.id
+	}).then(() => {
+		res.redirect('/chats');
+	});
+});
+
 // get route to send smile
 app.get('/sendSmile/:id', requireLogin, (req, res) => {
 	const newSmile = {
