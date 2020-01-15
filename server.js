@@ -168,10 +168,23 @@ app.get("/profile", requireLogin, (req, res) => {
 						receiver: req.user._id,
 						receiverReceived: false
 					}).then((newSmile) => {
-						res.render("profile", {
-							title: "Profile",
-							user: user,
-							newSmile: newSmile
+						Chat.findOne({
+							$or: [{
+									receiver: req.user._id,
+									receiverRead: false
+								},
+								{
+									sender: req.user._id,
+									senderRead: false
+								}
+							]
+						}).then((unread) => {
+							res.render('profile', {
+								title: 'Profile',
+								user: user,
+								newSmile: newSmile,
+								unread: unread
+							});
 						});
 					});
 				}
@@ -582,6 +595,35 @@ app.post('/chat/:id', requireLogin, (req, res) => {
 			}
 		});
 })
+
+// find history of all chats (user based)
+app.get('/chats', requireLogin, (req, res) => {
+	Chat.find({
+			receiver: req.user._id
+		}).populate('sender')
+		.populate('receiver')
+		.populate('chats.senderName')
+		.populate('chats.receiverName')
+		.sort({
+			date: 'desc'
+		}).then((received) => {
+			Chat.find({
+					sender: req.user._id
+				}).populate('sender')
+				.populate('receiver')
+				.populate('chats.senderName')
+				.populate('chats.receiverName')
+				.sort({
+					date: 'desc'
+				}).then((sent) => {
+					res.render('chat/chats', {
+						title: 'Chats History',
+						received: received,
+						sent: sent
+					});
+				});
+		});
+});
 
 // get route to send smile
 app.get('/sendSmile/:id', requireLogin, (req, res) => {

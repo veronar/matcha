@@ -1,0 +1,56 @@
+{{#if received}}
+
+{{#each received}}
+
+<div class="media">
+	<a href="/startChat/{{sender._id}}">
+		<img src="{{sender.image}}" class="mr-3 chatroom-users" alt="...">
+	</a>
+	<div class="media-body">
+
+		<a href="/startChat/{{sender._id}}">
+			<h5 class="mt-0">{{sender.fullname}}</h5>
+		</a>
+
+		{{#if receiverRead}}
+		<h5><i class="fa fa-envelope-open-o"></i></h5>
+		{{else}}
+		<h5><i class="fa fa-envelope"></i></h5>
+		{{/if}}
+		<small>{{getLastMoment date 'hour'}}</small>
+	</div>
+</div>
+<hr>
+
+{{/each}}
+
+{{else}}
+<h3>No new Messages</h3>
+<hr>
+{{/if}}
+
+
+
+
+{{#each sent}}
+<div class="media">
+	<a href="/startChat/{{receiver._id}}">
+		<img src="{{receiver.image}}" class="mr-3 chatroom-users" alt="...">
+	</a>
+	<div class="media-body">
+
+		<a href="/startChat/{{receiver._id}}">
+			<h5 class="mt-0">{{receiver.fullname}}</h5>
+		</a>
+
+		{{#if senderRead}}
+		<h5><i class="fa fa-envelope-open-o"></i></h5>
+		{{else}}
+		<h5><i class="fa fa-envelope"></i></h5>
+		{{/if}}
+		<small>{{getLastMoment date 'hour'}}</small>
+
+	</div>
+</div>
+<hr>
+{{/each}}
