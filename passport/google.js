@@ -9,7 +9,6 @@ if (process.env.NODE_ENV === 'production') {
 	callback = "https://stark-shore-41272.herokuapp.com/auth/google/callback";
 };
 
-
 passport.serializeUser((user, done) => {
 	return done(null, user.id);
 });
