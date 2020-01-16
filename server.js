@@ -655,27 +655,28 @@ app.post('/charge10dollars', requireLogin, (req, res) => {
 			amount: amount,
 			description: '$10 for 20 messages',
 			currency: 'usd',
-			customer: customer,
+			customer: customer.id,
 			receipt_email: customer.email
-		}, (err, charge) =>{
-			if (err) {
-				throw err;
-			}
+		}).then((charge) => {
 			if (charge) {
 				User.findById({
 					_id: req.user._id
 				}).then((user) => {
 					user.wallet += 20;
 					user.save()
-					.then(() =>{
-						res.render('success', {
-							title: 'Success',
-							charge: charge
+						.then(() => {
+							res.render('success', {
+								title: 'Success',
+								charge: charge
+							})
 						});
-					})
-				})
+				});
 			}
+		}).catch((err) => {
+			console.log(err);
 		});
+	}).catch((err) => {
+		console.log(err);
 	});
 });
 
