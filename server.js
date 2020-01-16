@@ -21,6 +21,9 @@ const app = express();
 //Load keys file
 const Keys = require("./config/keys");
 
+// even though stripe is an npm, it needs the key from keys.js. so we have to load it only after we get keys.js in here
+const stripe = require('stripe')(Keys.StripeSecretKey);
+
 // Load helpers
 const {
 	requireLogin,
@@ -637,6 +640,42 @@ app.get('/deleteChat/:id', requireLogin, (req, res) => {
 		_id: req.params.id
 	}).then(() => {
 		res.redirect('/chats');
+	});
+});
+
+//charge client - payment process
+app.post('/charge10dollars', requireLogin, (req, res) => {
+	console.log(req.body);
+	const amount = 1000;
+	stripe.customers.create({
+		email: req.body.stripeEmail,
+		source: req.body.stripeToken
+	}).then((customer) => {
+		stripe.charges.create({
+			amount: amount,
+			description: '$10 for 20 messages',
+			currency: 'usd',
+			customer: customer,
+			receipt_email: customer.email
+		}, (err, charge) =>{
+			if (err) {
+				throw err;
+			}
+			if (charge) {
+				User.findById({
+					_id: req.user._id
+				}).then((user) => {
+					user.wallet += 20;
+					user.save()
+					.then(() =>{
+						res.render('success', {
+							title: 'Success',
+							charge: charge
+						});
+					})
+				})
+			}
+		});
 	});
 });
 

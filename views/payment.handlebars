@@ -1,5 +1,19 @@
-<div class="container">
+<div class="row">
+	<div class="card col-sm-4">
+		<div class="card-body center">
 
-	<h3>Payment Required</h3>
-	<p>Please reload your wallet</p>
+			<h3 class="green">$10</h3>
+			<p>Buy 20 messages for $10</p>
+			<form action="/charge10dollars" method="POST">
+				<script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+					data-key="{{StripePublishableKey}}" data-amount="1000" data-name="Matcha"
+					data-description="$10 for 20 messages" data-image="/img/matcha.png" data-locale="auto">
+					</script>
+
+				</script>
+			</form>
+
+		</div>
+	</div>
+
 </div>
