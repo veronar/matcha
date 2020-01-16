@@ -6,6 +6,6 @@ module.exports = {
 	GoogleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
 	AWSAccessKeyID: process.env.AWS_ACCESS_KEY,
 	AWSAccessKeySecret: process.env.AWS_ACCESS_SECRET,
-	StripePublishableKey: "pk_test_ncC40AYgXadlNN8tY1Os2ZlX009RjxDIqz",
-	StripeSecretKey: "sk_test_ExTjTaoexZ4YK48gfh2YVyAn009MfqBhjB"
+	StripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+	StripeSecretKey: process.env.STRIPE_SECRET_KEY
 };
