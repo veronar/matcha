@@ -26,12 +26,18 @@ const {
 	requireLogin,
 	ensureGuest
 } = require("./helpers/auth");
+//upload image ajax? i think
 const {
 	uploadImage
 } = require("./helpers/aws");
+//bring in moment.js to use '? hours ago"
 const {
 	getLastMoment
 } = require('./helpers/moment');
+//bring in helper for payment notification, ie wallet is empty
+const {
+	walletChecker
+} = require('./helpers/wallet');
 
 //use body-parser middleware
 app.use(
@@ -76,7 +82,7 @@ require("./passport/facebook");
 require("./passport/google");
 require("./passport/local");
 
-//connect to mLab MongoDB
+//connect to mLab MongoDB / mongoAtlas
 mongoose.connect(Keys.MongoDB, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
@@ -466,7 +472,7 @@ app.get('/chat/:id', requireLogin, (req, res) => {
 });
 
 // handiling submittin of messages in chatroom (form)
-app.post('/chat/:id', requireLogin, (req, res) => {
+app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
 	Chat.findOne({
 			_id: req.params.id,
 			sender: req.user._id
