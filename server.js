@@ -643,7 +643,15 @@ app.get('/deleteChat/:id', requireLogin, (req, res) => {
 	});
 });
 
-//charge client - payment process
+//to the payment page
+app.get('/payment', requireLogin, (req, res) => {
+	res.render('payment', {
+		title: 'Payment',
+		StripePublishableKey: Keys.StripePublishableKey
+	});
+});
+
+//charge client - payment process ($10)
 app.post('/charge10dollars', requireLogin, (req, res) => {
 	console.log(req.body);
 	const amount = 1000;
@@ -679,6 +687,81 @@ app.post('/charge10dollars', requireLogin, (req, res) => {
 		console.log(err);
 	});
 });
+
+//charge client - payment process ($20)
+app.post('/charge20dollars', requireLogin, (req, res) => {
+	console.log(req.body);
+	const amount = 2000;
+	stripe.customers.create({
+		email: req.body.stripeEmail,
+		source: req.body.stripeToken
+	}).then((customer) => {
+		stripe.charges.create({
+			amount: amount,
+			description: '$20 for 50 messages',
+			currency: 'usd',
+			customer: customer.id,
+			receipt_email: customer.email
+		}).then((charge) => {
+			if (charge) {
+				User.findById({
+					_id: req.user._id
+				}).then((user) => {
+					user.wallet += 50;
+					user.save()
+						.then(() => {
+							res.render('success', {
+								title: 'Success',
+								charge: charge
+							})
+						});
+				});
+			}
+		}).catch((err) => {
+			console.log(err);
+		});
+	}).catch((err) => {
+		console.log(err);
+	});
+});
+
+//charge client - payment process ($20)
+app.post('/charge50dollars', requireLogin, (req, res) => {
+	console.log(req.body);
+	const amount = 5000;
+	stripe.customers.create({
+		email: req.body.stripeEmail,
+		source: req.body.stripeToken
+	}).then((customer) => {
+		stripe.charges.create({
+			amount: amount,
+			description: '$50 for 150 messages',
+			currency: 'usd',
+			customer: customer.id,
+			receipt_email: customer.email
+		}).then((charge) => {
+			if (charge) {
+				User.findById({
+					_id: req.user._id
+				}).then((user) => {
+					user.wallet += 150;
+					user.save()
+						.then(() => {
+							res.render('success', {
+								title: 'Success',
+								charge: charge
+							})
+						});
+				});
+			}
+		}).catch((err) => {
+			console.log(err);
+		});
+	}).catch((err) => {
+		console.log(err);
+	});
+});
+
 
 // get route to send smile
 app.get('/sendSmile/:id', requireLogin, (req, res) => {
