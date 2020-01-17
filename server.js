@@ -966,6 +966,37 @@ app.post('/editPost/:id', requireLogin, (req, res) => {
 	});
 });
 
+// Like a post
+app.get('/likePost/id', requireLogin, (req, res) => {
+	Post.findById({
+		_id: req.params.id
+	}).then((post) => {
+		const newLike = {
+			likeUser: req.user._id,
+			date: new Date()
+		};
+
+		post.likes.push(newLike);
+		post.save((err, post) => {
+			if (err) {
+				throw err;
+			}
+			if (post) {
+				res.redirect(`/fullPost/${post._id}`);
+			}
+		});
+	});
+});
+
+//Display full post page
+app.get('/fullPost/:id', requireLogin, (req, res) => {
+	Post.findById({
+		_id: req.params.id
+	}).then((post) => {
+
+	});
+});
+
 // Logout page
 app.get("/logout", (req, res) => {
 	User.findById({
