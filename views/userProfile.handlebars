@@ -2,7 +2,7 @@
 
 	<div class="col-sm-4">
 
-		<div class="card" style="width: 18rem;">
+		<div class="card" style="width: 90%;">
 			<img src="{{oneUser.image}}" class="card-img-top" alt="...">
 			<div class="card-body center">
 
@@ -16,10 +16,10 @@
 				</a>
 				{{!-- <script>
 					$(document).ready(function () {
-						setInterval(function() {
+						setInterval(function () {
 							$('#newSmile').attr('style', 'color: white')
 						}, 10);
-						setInterval(function() {
+						setInterval(function () {
 							$('#newSmile').attr('style', 'color: red')
 						}, 10);
 					})
@@ -36,7 +36,7 @@
 
 	</div>
 
-	<div class="col-sm" id="profile-info">
+	<div class="col-sm-8 card" id="profile-info" style="padding: 15px 25px;">
 		{{!-- <h3>Profile</h3> --}}
 		<h3 class="card-title"> {{oneUser.fullname}}</h3>
 		<small class="text-muted">Location</small>
@@ -53,9 +53,7 @@
 		<p class="card-text">
 			<i class="fa fa-file-text-o"></i> {{oneUser.about}}
 		</p>
-		<br>
 
-		<hr>
 	</div>
 
 </div>

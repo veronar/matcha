@@ -6,14 +6,13 @@
 			<a href="/uploadImage">
 				<img src="{{user.image}}" class="card-img-top" alt="...">
 			</a>
-			<div class="card-body">
-
-			</div>
+			{{!-- <div class="card-body">
+			</div> --}}
 		</div>
 
 	</div>
 
-	<div class="col-sm-8" id="profile-info">
+	<div class="col-sm-8 card" id="profile-info" style="padding: 15px 25px;">
 		{{!-- <h3>Profile</h3> --}}
 		<h3 class="card-title"> {{user.fullname}}</h3>
 		<small class="text-muted">Location</small>
@@ -30,28 +29,35 @@
 		<p class="card-text">
 			<i class="fa fa-file-text-o"></i> {{user.about}}
 		</p>
+
 		<br>
 
-		<hr>
-		<a href="/payment" class="btn btn-dark">Purchase Messages</a>
-		<button class="btn btn-info" onclick="editProfile()">Edit Profile</button>
-		<a href="/confirmDelete" class="btn btn-danger">Delete Profile</a>
+		<div class="text-right">
+			<a href="/displayPostForm" class="btn btn-primary">Create Post</a>
+			<a href="/payment" class="btn btn-secondary">Purchase Messages</a>
+			<button class="btn btn-info" onclick="editProfile()">Edit Profile</button>
+			<a href="/confirmDelete" class="btn btn-danger">Delete Profile</a>
+		</div>
+
 	</div>
 
 
-	<div class="col-sm" id='profileEditor' style="display: none;">
+	<div class="col-sm-8" id='profileEditor' style="display: none;">
 
 		<form action="/updateProfile" method="POST">
 
 			<div class="form-group">
+				<label for="fullname"><small>Fullname</small></label>
 				<input type="text" name="fullname" id="fullname" value="{{user.fullname}}" class="form-control">
 			</div>
 
 			<div class="form-group">
+				<label for="email"><small>Email</small></label>
 				<input type="text" name="email" id="email" value="{{user.email}}" class="form-control">
 			</div>
 
 			<div class="form-group">
+				<label for="gender"><small>Gender</small></label>
 				<select name="gender" id="gender" class="form-control">
 					<option value="male">Male</option>
 					<option value="female">Female</option>
@@ -59,6 +65,7 @@
 			</div>
 
 			<div class="form-group">
+				<label for="about"><small>About me</small></label>
 				<input type="text" name="about" id="about" value="{{user.about}}" class="form-control">
 			</div>
 
@@ -68,6 +75,62 @@
 
 	</div>
 
+</div>
+
+<br>
+
+<div class="container" style="padding-bottom: 10px; border-radius: 4px;">
+
+	<h2 class="center text-muted" style="padding: 30px 25px;">My Posts</h2>
+
+	{{#each posts}}
+
+	<div class="card" style="margin-bottom: 15px; padding: 10px;">
+		<div class="media">
+			<img src="{{postUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+			<div class="media-body">
+
+				<h5 class="mt-0 text-muted">{{title}}
+					<small> <i class="{{icon}}"></small></i>
+				</h5>
+
+				<a href="/userProfile/{{postUser._id}}">
+					<h5 class="mt-0 text-muted"><small>{{postUser.fullname}}</small></h5>
+				</a>
+
+				<p>{{body}}</p>
+
+				<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
+
+				<br>
+
+				<p class="card-text"><small class="text-muted">{{getLastMoment date 'hour'}}</small></p>
+
+			</div>
+		</div>
+	</div>
+
+	{{!-- <div class="card" style="margin-bottom: 15px;">
+		<div class="row no-gutters">
+			<div class="col-md-4">
+				<img src="{{image}}" class="card-img" alt="...">
+			</div>
+			<div class="col-md-8">
+				<div class="card-body">
+					<h5 class="card-title">{{title}} <small> <i class="text-muted {{icon}}"></i> </small></h5>
+					<h5 class="text-muted"><small>{{postUser.fullname}}</small></h5>
+					<p class="card-text">{{body}}</p>
+					<p class="card-text"><small class="text-muted">{{getLastMoment date 'hour'}}</small></p>
+				</div>
+			</div>
+		</div>
+	</div> --}}
+
+	{{else}}
+
+	<h3 class="text-muted center"><small> No posts found</small></h3>
+
+	{{/each}}
 </div>
 
 <script>

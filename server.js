@@ -163,7 +163,7 @@ app.get(
 	})
 );
 
-// Profile page
+// Profile page / display current users profile page
 app.get("/profile", requireLogin, (req, res) => {
 	User.findById({
 		_id: req.user._id
@@ -189,12 +189,31 @@ app.get("/profile", requireLogin, (req, res) => {
 								}
 							]
 						}).then((unread) => {
-							res.render('profile', {
-								title: 'Profile',
-								user: user,
-								newSmile: newSmile,
-								unread: unread
-							});
+							Post.find({
+									postUser: req.user._id
+								}).populate('postUser')
+								.sort({
+									date: 'desc'
+								})
+								.then((posts) => {
+									if (posts) {
+										res.render('profile', {
+											title: 'Profile',
+											user: user,
+											newSmile: newSmile,
+											unread: unread,
+											posts: posts
+										});
+									} else {
+										console.log('User does not have any posts');
+										res.render('profile', {
+											title: 'Profile',
+											user: user,
+											newSmile: newSmile,
+											unread: unread
+										});
+									}
+								});
 						});
 					});
 				}
@@ -823,11 +842,13 @@ app.get('/displayPostForm', requireLogin, (req, res) => {
 //creating the post
 app.post('/createPost', requireLogin, (req, res) => {
 	let allowComments = Boolean;
+
 	if (req.body.allowComments) {
 		allowComments = true;
 	} else {
 		allowComments = false;
-	}
+	};
+
 	const newPost = {
 		title: req.body.title,
 		body: req.body.body,
@@ -836,10 +857,23 @@ app.post('/createPost', requireLogin, (req, res) => {
 		postUser: req.user._id,
 		allowComments: allowComments,
 		date: new Date(),
-	}
+	};
+
+	if (req.body.status === 'public') {
+		newPost.icon = 'fa fa-globe';
+	} else if (req.body.status === 'private') {
+		newPost.icon = 'fa fa-lock';
+	} else {
+		newPost.icon = 'fa fa-users';
+	};
+
 	new Post(newPost).save()
 		.then(() => {
-			res.redirect('post/posts');
+			if (req.body.status === 'public') {
+				res.redirect('/posts');
+			} else {
+				res.redirect('/profile');
+			}
 		});
 });
 
