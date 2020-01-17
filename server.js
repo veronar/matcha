@@ -15,6 +15,7 @@ const Message = require("./models/message");
 const User = require("./models/user");
 const Chat = require("./models/chat");
 const Smile = require("./models/smile");
+const Post = require("./models/post");
 
 const app = express();
 
@@ -808,6 +809,52 @@ app.get('/showSmile/:id', requireLogin, (req, res) => {
 						smile: smile
 					});
 				}
+			});
+		});
+});
+
+//get method to add post //I think he is creating a feed and this is to add an entry (post) to that feed
+app.get('/displayPostForm', requireLogin, (req, res) => {
+	res.render('post/displayPostForm', {
+		title: 'Create Post'
+	});
+});
+
+//creating the post
+app.post('/createPost', requireLogin, (req, res) => {
+	let allowComments = Boolean;
+	if (req.body.allowComments) {
+		allowComments = true;
+	} else {
+		allowComments = false;
+	}
+	const newPost = {
+		title: req.body.title,
+		body: req.body.body,
+		status: req.body.status,
+		image: `https://matcha-vesingh.s3.amazonaws.com/${req.body.image}`,
+		postUser: req.user._id,
+		allowComments: allowComments,
+		date: new Date(),
+	}
+	new Post(newPost).save()
+		.then(() => {
+			res.redirect('post/posts');
+		});
+});
+
+//display all public posts / feed
+app.get('/posts', requireLogin, (req, res) => {
+	Post.find({
+			status: 'public'
+		}).populate('postUser')
+		.sort({
+			date: 'desc'
+		})
+		.then((posts) => {
+			res.render('post/posts', {
+				title: 'Posts',
+				posts: posts
 			});
 		});
 });

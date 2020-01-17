@@ -1,0 +1,23 @@
+<div class="container">
+	<h1 class="center text-muted">Feed / Posts</h1>
+	<hr>
+
+	{{#each posts}}
+
+	<div class="media">
+		<img src="{{postUser.image}}" class="mr-3" alt="...">
+		<div class="media-body">
+			<h5 class="mt-0">{{title}}</h5>
+			<img src="{{image}}" class="img-fluid" alt="">
+			<p>{{body}}</p>
+			<small>{{getLastMoment date 'hour'}}</small>
+		</div>
+	</div>
+	<hr>
+
+	{{else}}
+
+	<h3 class="text-muted">No posts found...</h3>
+
+	{{/each}}
+</div>
