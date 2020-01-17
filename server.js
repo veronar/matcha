@@ -869,10 +869,10 @@ app.post('/createPost', requireLogin, (req, res) => {
 
 	new Post(newPost).save()
 		.then(() => {
-			if (req.body.status === 'public') {
-				res.redirect('/posts');
-			} else {
+			if (req.body.status === 'private') {
 				res.redirect('/profile');
+			} else {
+				res.redirect('/posts');
 			}
 		});
 });
@@ -891,6 +891,56 @@ app.get('/posts', requireLogin, (req, res) => {
 				posts: posts
 			});
 		});
+});
+
+//Delete Posts
+app.get('/deletePost/:id', requireLogin, (req, res) => {
+	Post.deleteOne({
+		_id: req.params.id
+	}).then(() => {
+		res.redirect('/profile');
+	});
+});
+
+//edit posts
+app.get('/editPost/:id', requireLogin, (req, res) => {
+	Post.findById({
+		_id: req.params.id
+	}).then((post) => {
+		res.render('post/editPost', {
+			title: 'Edit',
+			post: post
+		});
+	});
+});
+
+//submit form to updates Save changes to post
+app.post('/editPost/:id', requireLogin, (req, res) => {
+	Post.findByIdAndUpdate({
+		_id: req.params.id
+	}).then((post) => {
+		post.title = req.body.title;
+		post.body = req.body.body;
+		post.status = req.body.status;
+		post.image = `https://matcha-vesingh.s3.amazonaws.com/${req.body.image}`;
+		post.date = new Date();
+
+		if (req.body.status === 'public') {
+			post.icon = 'fa fa-globe';
+		} else if (req.body.status === 'private') {
+			post.icon = 'fa fa-lock';
+		} else {
+			post.icon = 'fa fa-users';
+		};
+		post.save()
+			.then(() => {
+				if (req.body.status === 'private') {
+					res.redirect('/profile');
+				} else {
+					res.redirect('/posts');
+				}
+			});
+	});
 });
 
 // Logout page
