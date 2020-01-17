@@ -1,0 +1,53 @@
+<div class="container">
+
+	<div class="center">
+		<h1 class="center text-muted">Post</h1>
+		<hr>
+	</div>
+
+	<div class="media">
+
+		<a href="/userProfile/{{post.postUser._id}}">
+			<img src="{{post.postUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+		</a>
+
+		<div class="media-body">
+
+			<h5 class="mt-0 text-muted">{{post.title}}
+				<small> <i class="{{post.icon}}"></small></i>
+			</h5>
+
+			<a href="/userProfile/{{post.postUser._id}}">
+				<h5 class="mt-0 text-muted"><small>{{post.postUser.fullname}}</small></h5>
+			</a>
+
+			<p>{{post.body}}</p>
+
+			{{#if post.image}}
+			<img src="{{post.image}}" class="" width="100px" style="border-radius: 4px;">
+			<br>
+			{{/if}}
+
+			{{#each post}}
+			{{#each likes}}
+
+			<div class="media mt-3">
+
+				<a class="mr-3" href="#">
+					<img src="{{likeUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+				</a>
+
+				<div class="media-body">
+					<h5 class="mt-0"><i class="fa fa-heart red"></i></h5>
+					<small>{{getLastMoment date 'hour'}}</small>
+				</div>
+
+			</div>
+			<hr>
+
+			{{/each}}
+			{{/each}}
+		</div>
+	</div>
+
+</div>
