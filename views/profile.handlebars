@@ -100,9 +100,11 @@
 
 				<p>{{body}}</p>
 
+				{{#if image}}
 				<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
-
 				<br>
+				{{/if}}
+
 				<small class="text-muted">{{getLastMoment date 'hour'}}</small>
 
 				<small class="pull-right">

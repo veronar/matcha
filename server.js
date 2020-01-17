@@ -849,11 +849,18 @@ app.post('/createPost', requireLogin, (req, res) => {
 		allowComments = false;
 	};
 
+	let pic = String;
+	if (req.body.image) {
+		pic = `https://matcha-vesingh.s3.amazonaws.com/${req.body.image}`;
+	} else {
+		pic = null;
+	}
+
 	const newPost = {
 		title: req.body.title,
 		body: req.body.body,
 		status: req.body.status,
-		image: `https://matcha-vesingh.s3.amazonaws.com/${req.body.image}`,
+		image: pic,
 		postUser: req.user._id,
 		allowComments: allowComments,
 		date: new Date(),
@@ -919,10 +926,26 @@ app.post('/editPost/:id', requireLogin, (req, res) => {
 	Post.findByIdAndUpdate({
 		_id: req.params.id
 	}).then((post) => {
+
+		let allowComments = Boolean;
+		if (req.body.allowComments) {
+			allowComments = true;
+		} else {
+			allowComments = false;
+		}
+
+		let pic = String;
+		if (req.body.image) {
+			pic = `https://matcha-vesingh.s3.amazonaws.com/${req.body.image}`;
+		} else {
+			pic = null;
+		}
+
 		post.title = req.body.title;
 		post.body = req.body.body;
 		post.status = req.body.status;
-		post.image = `https://matcha-vesingh.s3.amazonaws.com/${req.body.image}`;
+		post.allowComments = allowComments;
+		post.image = pic;
 		post.date = new Date();
 
 		if (req.body.status === 'public') {

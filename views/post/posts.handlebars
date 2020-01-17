@@ -26,11 +26,21 @@
 
 				<p>{{body}}</p>
 
+				{{#if image}}
 				<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
-
 				<br>
+				{{/if}}
 
-				<p class="card-text"><small class="text-muted">{{getLastMoment date 'hour'}}</small></p>
+
+				<small class="text-muted">{{getLastMoment date 'hour'}}</small>
+
+				<h4>
+					<a href="/likePost/{{_id}}" class="red"> <i class="fa fa-heart-o"></i></a>
+
+					{{#if allowComments}}
+					<a href="/leaveComment/{{_id}}" class=""> <i class="fa fa-comment-o"></i></a>
+					{{/if}}
+				</h4>
 
 			</div>
 		</div>
