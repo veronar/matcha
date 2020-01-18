@@ -5,7 +5,7 @@
 		<hr>
 	</div>
 
-	<div class="media">
+	<div class="media bg-white" style="border-radius: 4px; padding: 20px;">
 
 		<a href="/userProfile/{{post.postUser._id}}">
 			<img src="{{post.postUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
@@ -28,6 +28,30 @@
 			<br>
 			{{/if}}
 
+			<small>{{getLastMoment date ''}}</small>
+			<hr>
+
+
+			{{#each post}}
+			{{#each comments}}
+
+			<div class="media mt-3">
+
+				<a class="mr-3" href="/userProfile/{{commentUser._id}}">
+					<img src="{{commentUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+				</a>
+
+				<div class="media-body">
+					<p>{{commentBody}}</p>
+					<small>{{getLastMoment date 'hour'}}</small>
+				</div>
+
+			</div>
+			<hr>
+
+			{{/each}}
+			{{/each}}
+
 			{{#each post}}
 			{{#each likes}}
 
@@ -38,7 +62,7 @@
 				</a>
 
 				<div class="media-body">
-					<h4 class="mt-0"><i class="fa fa-heart red"></i></h4>
+					<h5 class="mt-0"><i class="fa fa-heart red"></i></h5>
 					<small>{{getLastMoment date 'hour'}}</small>
 				</div>
 
@@ -48,15 +72,31 @@
 			{{/each}}
 			{{/each}}
 
-			<br>
-			{{#if post.allowComments}}
-			<form action="/leaveComment/{{post._id}}" method="POST" class="form-inline">
-				<div class="form-group mx-sm-2 mg-2">
+			<h4>
+				<a href="/likePost/{{post._id}}" class="btn btn-danger"><i class="fa fa-heart"></i></a>
+				{{#if post.allowComments}}
+				<a onclick="displayCommentForm()" id="comment-icon" href="#" class="btn btn-primary"><i
+						class="fa fa-comment"></i></a>
+				{{/if}}
+			</h4>
+
+			{{!-- {{#if post.allowComments}} --}}
+
+			<form action="/leaveComment/{{post._id}}" method="POST" class="" id="comment_form" style="display: none;">
+				<br>
+				<div class="form-group">
 					<input type="text" name="commentBody" class="form-control" placeholder="Leave comment...">
 				</div>
-				<button class="btn btn-primary mb-2 mt-2" type="submit"><i class="fa fa-comment"></i></button>
+				<button class="btn btn-primary " type="submit"><i class="fa fa-comment"></i> Submit</button>
 			</form>
-			{{/if}}
+
+			<script>
+				function displayCommentForm() {
+					document.getElementById('comment-icon').style.display = 'none';
+					document.getElementById('comment_form').style.display = 'inline';
+				}
+			</script>
+			{{!-- {{/if}} --}}
 
 		</div>
 	</div>
