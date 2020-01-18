@@ -1,13 +1,11 @@
 <div class="caontainer">
 
 	<div class="center">
-		<h1 class="center text-muted">Messages</h1>
+		<h1 class="center text-muted">{{title}}</h1>
 		<hr>
 	</div>
 
-
 	{{#if received}}
-
 	{{#each received}}
 
 	<div class="media">
@@ -24,12 +22,12 @@
 			<a href="/startChat/{{sender._id}}">
 				<h5><i class="fa fa-envelope-open-o"></i></h5>
 			</a>
-
 			{{else}}
 			<a href="/startChat/{{sender._id}}">
 				<h5><i class="fa fa-envelope"></i></h5>
 			</a>
 			{{/if}}
+
 			<small>{{getLastMoment date 'hour'}}</small>
 
 			<a href="/deleteChat/{{_id}}">
@@ -43,8 +41,8 @@
 	{{/each}}
 
 	{{else}}
-	{{#if sent}}
 
+	{{#if sent}}
 	{{#each sent}}
 	<div class="media">
 		<a href="/startChat/{{receiver._id}}">

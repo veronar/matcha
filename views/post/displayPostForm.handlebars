@@ -1,10 +1,13 @@
 <div class="container">
-	<h1 class="center text-muted" style="margin-bottom: 25px;">Create Post</h1>
-	<hr>
 
-	<h1 class="center text-muted" id="spinner" style="display: none">
+	<div class="center">
+		<h1 class="center text-muted">{{title}}</h1>
+		<hr>
+	</div>
+
+	<h4 class="center text-muted" id="spinner" style="display: none">
 		<small><i class="fa fa-spinner"></i> Please Wait... </small>
-	</h1>
+	</h4>
 
 	<form action="/createPost" method="POST" id="post-form">
 
@@ -42,6 +45,8 @@
 
 	</form>
 </div>
+
+
 
 <script>
 	function showSpinner() {

@@ -116,7 +116,7 @@ app.set("view engine", "handlebars");
 // Home page
 app.get("/", ensureGuest, (req, res) => {
 	res.render("home", {
-		title: "Home"
+		title: "Welcome"
 	});
 });
 
@@ -198,7 +198,7 @@ app.get("/profile", requireLogin, (req, res) => {
 								.then((posts) => {
 									if (posts) {
 										res.render('profile', {
-											title: 'Profile',
+											title: 'My Profile',
 											user: user,
 											newSmile: newSmile,
 											unread: unread,
@@ -207,7 +207,7 @@ app.get("/profile", requireLogin, (req, res) => {
 									} else {
 										console.log('User does not have any posts');
 										res.render('profile', {
-											title: 'Profile',
+											title: 'My Profile',
 											user: user,
 											newSmile: newSmile,
 											unread: unread
@@ -258,7 +258,7 @@ app.get('/deleteAccount', requireLogin, (req, res) => {
 // Creating new Local account
 app.get("/newAccount", ensureGuest, (req, res) => {
 	res.render("newAccount", {
-		title: "Signup"
+		title: "Register"
 	});
 });
 
@@ -317,7 +317,7 @@ app.post("/signup", ensureGuest, (req, res) => {
 							text: "Account successfully created"
 						});
 						res.render("home", {
-							title: 'Home',
+							title: 'Welcome',
 							success: success
 						});
 					}
@@ -374,7 +374,7 @@ app.post('/retrievePwd', ensureGuest, (req, res) => {
 	if (errors.length > 0) {
 		res.render("retrievePwd", {
 			errors: errors,
-			title: "Error",
+			title: "Reset Password",
 			email: email,
 			password: pwd1,
 			password2: pwd2
@@ -409,7 +409,7 @@ app.post('/retrievePwd', ensureGuest, (req, res) => {
 // Handle get to upload images
 app.get("/uploadImage", requireLogin, (req, res) => {
 	res.render("uploadImage", {
-		title: "Upload"
+		title: "Upload Image"
 	});
 });
 
@@ -716,7 +716,7 @@ app.get('/chats', requireLogin, (req, res) => {
 					date: 'desc'
 				}).then((sent) => {
 					res.render('chat/chats', {
-						title: 'Chats History',
+						title: 'Messages',
 						received: received,
 						sent: sent
 					});
@@ -736,7 +736,7 @@ app.get('/deleteChat/:id', requireLogin, (req, res) => {
 //to the payment page
 app.get('/payment', requireLogin, (req, res) => {
 	res.render('payment', {
-		title: 'Payment',
+		title: 'Purchase',
 		StripePublishableKey: Keys.StripePublishableKey
 	});
 });
@@ -768,7 +768,7 @@ app.post('/charge10dollars', requireLogin, (req, res) => {
 								text: "Payment successful"
 							});
 							res.render('success', {
-								title: 'Success',
+								title: 'Payment successful',
 								charge: charge
 							})
 						});
@@ -805,7 +805,7 @@ app.post('/charge20dollars', requireLogin, (req, res) => {
 					user.save()
 						.then(() => {
 							res.render('success', {
-								title: 'Success',
+								title: 'Payment successful',
 								charge: charge
 							})
 						});
@@ -842,7 +842,7 @@ app.post('/charge50dollars', requireLogin, (req, res) => {
 					user.save()
 						.then(() => {
 							res.render('success', {
-								title: 'Success',
+								title: 'Payment successful',
 								charge: charge
 							})
 						});
@@ -968,7 +968,7 @@ app.get('/posts', requireLogin, (req, res) => {
 		})
 		.then((posts) => {
 			res.render('post/posts', {
-				title: 'Posts',
+				title: 'Feed',
 				posts: posts
 			});
 		});
@@ -989,7 +989,7 @@ app.get('/editPost/:id', requireLogin, (req, res) => {
 		_id: req.params.id
 	}).then((post) => {
 		res.render('post/editPost', {
-			title: 'Edit',
+			title: 'Edit Post',
 			post: post
 		});
 	});

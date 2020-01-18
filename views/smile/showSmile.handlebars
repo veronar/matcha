@@ -1,15 +1,23 @@
-<h2 class="center">You have new Smiles</h2>
-<div class="row">
-	{{!-- {{#each smile}} --}}
+<div class="container">
 
-	<div class="col-sm-4">
-		<div class="card" style="width: 18rem; margin-top: 30px;">
-			<img src="{{smile.sender.image}}" class="card-img-top" alt="...">
-			<div class="card-body center">
-				<a href="/sendSmile/{{smile.sender._id}}" class="btn btn-danger">Smile back</a>
-			</div>
-		</div>
+	<div class="center">
+		<h1 class="center text-muted">{{title}}</h1>
+		<hr>
 	</div>
 
-	{{!-- {{/each}} --}}
+	<div class="row">
+		{{!-- {{#each smile}} --}}
+
+		<div class="col-sm-4">
+			<div class="card" style="width: 18rem; margin-top: 30px;">
+				<img src="{{smile.sender.image}}" class="card-img-top" alt="...">
+				<div class="card-body center">
+					<a href="/sendSmile/{{smile.sender._id}}" class="btn btn-danger">Smile back</a>
+				</div>
+			</div>
+		</div>
+
+		{{!-- {{/each}} --}}
+	</div>
+
 </div>
