@@ -33,12 +33,12 @@
 
 			<div class="media mt-3">
 
-				<a class="mr-3" href="#">
+				<a class="mr-3" href="/userProfile/{{likeUser._id}}">
 					<img src="{{likeUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
 				</a>
 
 				<div class="media-body">
-					<h5 class="mt-0"><i class="fa fa-heart red"></i></h5>
+					<h4 class="mt-0"><i class="fa fa-heart red"></i></h4>
 					<small>{{getLastMoment date 'hour'}}</small>
 				</div>
 
@@ -47,6 +47,17 @@
 
 			{{/each}}
 			{{/each}}
+
+			<br>
+			{{#if post.allowComments}}
+			<form action="/leaveComment/{{post._id}}" method="POST" class="form-inline">
+				<div class="form-group mx-sm-2 mg-2">
+					<input type="text" name="commentBody" class="form-control" placeholder="Leave comment...">
+				</div>
+				<button class="btn btn-primary mb-2 mt-2" type="submit"><i class="fa fa-comment"></i></button>
+			</form>
+			{{/if}}
+
 		</div>
 	</div>
 

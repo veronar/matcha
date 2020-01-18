@@ -101,8 +101,10 @@
 				<p>{{body}}</p>
 
 				{{#if image}}
-				<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
-				<br>
+				<a href="/fullPost/{{_id}}">
+					<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
+					<br>
+				</a>
 				{{/if}}
 
 				<small class="text-muted">{{getLastMoment date 'hour'}}</small>

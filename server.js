@@ -976,6 +976,26 @@ app.get('/likePost/:id', requireLogin, (req, res) => {
 			date: new Date()
 		};
 
+		// let newbie = req.user._id;
+		// //console.log(newbie);
+
+		// // let exists = post.likes.filter(function (e1) {
+		// // 	return (e1['likeUser'] == newbie)
+		// // });
+		// let exists = post.likes.some(function (e1) {
+		// 	return (e1.likeUser == newbie)
+		// });
+		// console.log(exists);
+
+		// if (exists > 0) {
+		// 	console.log(' I got inot the if! yay');
+		// 	//let pos = post.likes.splice(req.user._id);
+		// 	//console.log(pos);
+		// 	//post.likes.splice(pos, 1);
+		// } else {
+		// 	post.likes.push(newLike);
+		// }
+
 		post.likes.push(newLike);
 		post.save((err, post) => {
 			if (err) {
@@ -987,6 +1007,7 @@ app.get('/likePost/:id', requireLogin, (req, res) => {
 		});
 	});
 });
+
 
 //Display full post page
 app.get('/fullPost/:id', requireLogin, (req, res) => {
