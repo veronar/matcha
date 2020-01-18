@@ -1,67 +1,48 @@
-<div class="row">
-	{{#each singles}}
+<div class="container">
 
-	{{#if online}}
-
-	<div class="col-sm-4" style="margin-bottom: 35px;">
-		<div class="card">
-
-			<img src="{{image}}" class="card-img-top">
-			<div class="card-body center">
-
-				<h5>{{fullname}}</h5>
-
-				<a href="/userProfile/{{_id}}">
-					<button class="btn btn-outline-primary"><i class="fa fa-user"></i></button>
-				</a>
-
-				<a href="/startChat/{{_id}}">
-					<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
-				</a>
-
-				<a href="/sendSmile/{{_id}}">
-					<button class="btn btn-outline-danger"><i class="fa fa-smile-o"></i></button>
-				</a>
-
-				<p class="green">Online</p>
-
-			</div>
-
-		</div>
+	<div class="center">
+		<h1 class="center text-muted">Discover People</h1>
+		<hr>
 	</div>
 
-	{{else}}
-	<div class="col-sm-4" style="margin-bottom: 35px;">
-		<div class="card">
+	<div class="row">
+		{{#each singles}}
 
-			<img src="{{image}}" class="card-img-top">
-			<div class="card-body center">
+		<div class="col-sm-4" style="margin-bottom: 35px;">
+			<div class="card">
 
-				<h5>{{fullname}}</h5>
+				<img src="{{image}}" class="card-img-top">
+				<div class="card-body center">
 
-				<a href="/userProfile/{{_id}}">
-					<button class="btn btn-outline-primary"><i class="fa fa-user"></i></button>
-				</a>
+					<h5>{{fullname}}</h5>
 
-				<a href="/startChat/{{_id}}">
-					<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
-				</a>
+					<a href="/userProfile/{{_id}}">
+						<button class="btn btn-outline-primary"><i class="fa fa-user"></i></button>
+					</a>
 
-				<a href="/sendSmile/{{_id}}">
-					<button class="btn btn-outline-danger"><i class="fa fa-smile-o"></i></button>
-				</a>
+					<a href="/startChat/{{_id}}">
+						<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
+					</a>
 
-				<p class="red">Offline</p>
+					<a href="/sendSmile/{{_id}}">
+						<button class="btn btn-outline-danger"><i class="fa fa-smile-o"></i></button>
+					</a>
+
+					{{#if online}}
+					<p class="green">Online</p>
+					{{else}}
+					<p class="red">Offline</p>
+					{{/if}}
+
+				</div>
 
 			</div>
-
 		</div>
+
+		{{else}}
+		<p>No users found</p>
+		<h1>hahahahah</h1>
+		{{/each}}
 	</div>
 
-	{{/if}}
-
-	{{else}}
-	<p>No users found</p>
-	<h1>hahahahah</h1>
-	{{/each}}
 </div>

@@ -1,81 +1,91 @@
-{{#if received}}
+<div class="caontainer">
 
-{{#each received}}
-
-<div class="media">
-	<a href="/startChat/{{sender._id}}">
-		<img src="{{sender.image}}" class="mr-3 chatroom-users" alt="...">
-	</a>
-	<div class="media-body">
-
-		<a href="/startChat/{{sender._id}}">
-			<h5 class="mt-0">{{sender.fullname}}</h5>
-		</a>
-
-		{{#if receiverRead}}
-		<a href="/startChat/{{sender._id}}">
-			<h5><i class="fa fa-envelope-open-o"></i></h5>
-		</a>
-
-		{{else}}
-		<a href="/startChat/{{sender._id}}">
-			<h5><i class="fa fa-envelope"></i></h5>
-		</a>
-		{{/if}}
-		<small>{{getLastMoment date 'hour'}}</small>
-
-		<a href="/deleteChat/{{_id}}">
-			<h5 class="pull-right red"><i class="fa fa-trash"></i></h5>
-		</a>
-
+	<div class="center">
+		<h1 class="center text-muted">Messages</h1>
+		<hr>
 	</div>
-</div>
-<hr>
 
-{{/each}}
 
-{{else}}
-{{#if sent}}
+	{{#if received}}
 
-{{#each sent}}
-<div class="media">
-	<a href="/startChat/{{receiver._id}}">
-		<img src="{{receiver.image}}" class="mr-3 chatroom-users" alt="...">
-	</a>
-	<div class="media-body">
+	{{#each received}}
 
-		<a href="/startChat/{{receiver._id}}">
-			<h5 class="mt-0">{{receiver.fullname}}</h5>
+	<div class="media">
+		<a href="/startChat/{{sender._id}}">
+			<img src="{{sender.image}}" class="mr-3 chatroom-users" alt="...">
 		</a>
+		<div class="media-body">
 
-		{{#if senderRead}}
-		<a href="/startChat/{{receiver._id}}">
-			<h5><i class="fa fa-envelope-open-o"></i></h5>
-		</a>
-		{{else}}
-		<a href="/startChat/{{receiver._id}}">
-			<h5><i class="fa fa-envelope"></i></h5>
-		</a>
-		{{/if}}
-		<small>{{getLastMoment date 'hour'}}</small>
+			<a href="/startChat/{{sender._id}}">
+				<h5 class="mt-0">{{sender.fullname}}</h5>
+			</a>
 
-		<a href="/deleteChat/{{_id}}">
-			<h5 class="pull-right red"><i class="fa fa-trash"></i></h5>
-		</a>
+			{{#if receiverRead}}
+			<a href="/startChat/{{sender._id}}">
+				<h5><i class="fa fa-envelope-open-o"></i></h5>
+			</a>
 
+			{{else}}
+			<a href="/startChat/{{sender._id}}">
+				<h5><i class="fa fa-envelope"></i></h5>
+			</a>
+			{{/if}}
+			<small>{{getLastMoment date 'hour'}}</small>
+
+			<a href="/deleteChat/{{_id}}">
+				<h5 class="pull-right red"><i class="fa fa-trash"></i></h5>
+			</a>
+
+		</div>
 	</div>
-</div>
-<hr>
-{{/each}}
+	<hr>
 
-{{else}}
-<h4 class="center text-muted" style="margin: 35px 0;">No Messages</h4>
-<hr>
-{{/if}}
+	{{/each}}
 
-{{/if}}
+	{{else}}
+	{{#if sent}}
 
-<div class="center">
+	{{#each sent}}
+	<div class="media">
+		<a href="/startChat/{{receiver._id}}">
+			<img src="{{receiver.image}}" class="mr-3 chatroom-users" alt="...">
+		</a>
+		<div class="media-body">
 
-	<a href="/payment"><button class="btn btn-secondary">Purchase Messages</button></a>
+			<a href="/startChat/{{receiver._id}}">
+				<h5 class="mt-0">{{receiver.fullname}}</h5>
+			</a>
+
+			{{#if senderRead}}
+			<a href="/startChat/{{receiver._id}}">
+				<h5><i class="fa fa-envelope-open-o"></i></h5>
+			</a>
+			{{else}}
+			<a href="/startChat/{{receiver._id}}">
+				<h5><i class="fa fa-envelope"></i></h5>
+			</a>
+			{{/if}}
+			<small>{{getLastMoment date 'hour'}}</small>
+
+			<a href="/deleteChat/{{_id}}">
+				<h5 class="pull-right red"><i class="fa fa-trash"></i></h5>
+			</a>
+
+		</div>
+	</div>
+	<hr>
+	{{/each}}
+
+	{{else}}
+	<h4 class="center text-muted" style="margin: 35px 0;">No Messages</h4>
+	<hr>
+	{{/if}}
+
+	{{/if}}
+
+	<div class="center">
+
+		<a href="/payment"><button class="btn btn-secondary">Purchase Messages</button></a>
+	</div>
+
 </div>

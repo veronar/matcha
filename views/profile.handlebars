@@ -1,124 +1,131 @@
-<div class="row">
+<div class="container">
 
-	<div class="col-sm-4">
-
-		<div class="card" style="width: 100%;">
-			<a href="/uploadImage">
-				<img src="{{user.image}}" class="card-img-top" alt="...">
-			</a>
-			{{!-- <div class="card-body">
-			</div> --}}
-		</div>
-
-	</div>
-
-	<div class="col-sm-8 card" id="profile-info" style="padding: 15px 25px;">
-		{{!-- <h3>Profile</h3> --}}
-		<h3 class="card-title"> {{user.fullname}}</h3>
-		<small class="text-muted">Location</small>
+	<div class="center">
+		<h1 class="center text-muted">My Profile</h1>
 		<hr>
+	</div>
 
-		<p class="card-text">
-			<i class="fa fa-envelope"></i> {{user.email}}
-		</p>
+	<div class="row">
 
-		<p class="card-text">
-			<i class="fa fa-venus-mars"></i> {{user.gender}}
-		</p>
+		<div class="col-sm-4">
 
-		<p class="card-text">
-			<i class="fa fa-file-text-o"></i> {{user.about}}
-		</p>
+			<div class="card" style="width: 100%;">
+				<a href="/uploadImage">
+					<img src="{{user.image}}" class="card-img-top" alt="...">
+				</a>
+				{{!-- <div class="card-body">
+			</div> --}}
+			</div>
 
-		<br>
+		</div>
 
-		<div class="text-right">
-			<a href="/displayPostForm" class="btn btn-primary">Create Post</a>
-			<a href="/payment" class="btn btn-secondary">Purchase Messages</a>
-			<button class="btn btn-info" onclick="editProfile()">Edit Profile</button>
-			<a href="/confirmDelete" class="btn btn-danger">Delete Profile</a>
+		<div class="col-sm-8 card" id="profile-info" style="padding: 15px 25px;">
+			{{!-- <h3>Profile</h3> --}}
+			<h3 class="card-title"> {{user.fullname}}</h3>
+			<small class="text-muted">Location</small>
+			<hr>
+
+			<p class="card-text">
+				<i class="fa fa-envelope"></i> {{user.email}}
+			</p>
+
+			<p class="card-text">
+				<i class="fa fa-venus-mars"></i> {{user.gender}}
+			</p>
+
+			<p class="card-text">
+				<i class="fa fa-file-text-o"></i> {{user.about}}
+			</p>
+
+			<br>
+
+			<div class="text-right">
+				<a href="/displayPostForm" class="btn btn-primary">Create Post</a>
+				<a href="/payment" class="btn btn-secondary">Purchase Messages</a>
+				<button class="btn btn-info" onclick="editProfile()">Edit Profile</button>
+				<a href="/confirmDelete" class="btn btn-danger">Delete Profile</a>
+			</div>
+
+		</div>
+
+
+		<div class="col-sm-8" id='profileEditor' style="display: none;">
+
+			<form action="/updateProfile" method="POST">
+
+				<div class="form-group">
+					<label for="fullname"><small>Fullname</small></label>
+					<input type="text" name="fullname" id="fullname" value="{{user.fullname}}" class="form-control">
+				</div>
+
+				<div class="form-group">
+					<label for="email"><small>Email</small></label>
+					<input type="text" name="email" id="email" value="{{user.email}}" class="form-control">
+				</div>
+
+				<div class="form-group">
+					<label for="gender"><small>Gender</small></label>
+					<select name="gender" id="gender" class="form-control">
+						<option value="male">Male</option>
+						<option value="female">Female</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="about"><small>About me</small></label>
+					<input type="text" name="about" id="about" value="{{user.about}}" class="form-control">
+				</div>
+
+				<button type="submit" class="btn btn-primary">Save</button>
+
+			</form>
+
 		</div>
 
 	</div>
 
+	<br>
 
-	<div class="col-sm-8" id='profileEditor' style="display: none;">
+	<div class="container" style="padding-bottom: 10px; border-radius: 4px;">
 
-		<form action="/updateProfile" method="POST">
+		<h2 class="center text-muted" style="padding: 20px 25px; margin-top: 10px;">My Posts</h2>
 
-			<div class="form-group">
-				<label for="fullname"><small>Fullname</small></label>
-				<input type="text" name="fullname" id="fullname" value="{{user.fullname}}" class="form-control">
-			</div>
+		{{#each posts}}
 
-			<div class="form-group">
-				<label for="email"><small>Email</small></label>
-				<input type="text" name="email" id="email" value="{{user.email}}" class="form-control">
-			</div>
+		<div class="card" style="margin-bottom: 15px; padding: 10px;">
+			<div class="media">
+				<img src="{{postUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+				<div class="media-body">
 
-			<div class="form-group">
-				<label for="gender"><small>Gender</small></label>
-				<select name="gender" id="gender" class="form-control">
-					<option value="male">Male</option>
-					<option value="female">Female</option>
-				</select>
-			</div>
+					<h5 class="mt-0 text-muted">{{title}}
+						<small> <i class="{{icon}}"></small></i>
+					</h5>
 
-			<div class="form-group">
-				<label for="about"><small>About me</small></label>
-				<input type="text" name="about" id="about" value="{{user.about}}" class="form-control">
-			</div>
+					<a href="/userProfile/{{postUser._id}}">
+						<h5 class="mt-0 text-muted"><small>{{postUser.fullname}}</small></h5>
+					</a>
 
-			<button type="submit" class="btn btn-primary">Save</button>
+					<p>{{body}}</p>
 
-		</form>
+					{{#if image}}
+					<a href="/fullPost/{{_id}}">
+						<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
+						<br>
+					</a>
+					{{/if}}
 
-	</div>
+					<small class="text-muted">{{getLastMoment date 'hour'}}</small>
 
-</div>
+					<small class="pull-right">
+						<a href="/editPost/{{_id}}" class="post-icons"><i class="fa fa-pencil"></i> Edit</a>
+						<a href="/deletePost/{{_id}}" class="post-icons"><i class="fa fa-trash"></i> Delete</a>
+					</small>
 
-<br>
-
-<div class="container" style="padding-bottom: 10px; border-radius: 4px;">
-
-	<h2 class="center text-muted" style="padding: 20px 25px; margin-top: 10px;">My Posts</h2>
-
-	{{#each posts}}
-
-	<div class="card" style="margin-bottom: 15px; padding: 10px;">
-		<div class="media">
-			<img src="{{postUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
-			<div class="media-body">
-
-				<h5 class="mt-0 text-muted">{{title}}
-					<small> <i class="{{icon}}"></small></i>
-				</h5>
-
-				<a href="/userProfile/{{postUser._id}}">
-					<h5 class="mt-0 text-muted"><small>{{postUser.fullname}}</small></h5>
-				</a>
-
-				<p>{{body}}</p>
-
-				{{#if image}}
-				<a href="/fullPost/{{_id}}">
-					<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
-					<br>
-				</a>
-				{{/if}}
-
-				<small class="text-muted">{{getLastMoment date 'hour'}}</small>
-
-				<small class="pull-right">
-					<a href="/editPost/{{_id}}" class="post-icons"><i class="fa fa-pencil"></i> Edit</a>
-					<a href="/deletePost/{{_id}}" class="post-icons"><i class="fa fa-trash"></i> Delete</a>
-				</small>
-
+				</div>
 			</div>
 		</div>
-	</div>
 
-	{{!-- <div class="card" style="margin-bottom: 15px;">
+		{{!-- <div class="card" style="margin-bottom: 15px;">
 		<div class="row no-gutters">
 			<div class="col-md-4">
 				<img src="{{image}}" class="card-img" alt="...">
@@ -134,11 +141,12 @@
 		</div>
 	</div> --}}
 
-	{{else}}
+		{{else}}
 
-	<h3 class="text-muted center"><small> No posts found</small></h3>
+		<h3 class="text-muted center"><small> No posts found</small></h3>
 
-	{{/each}}
+		{{/each}}
+	</div>
 </div>
 
 <script>

@@ -1,147 +1,167 @@
-<div class="row">
+<div class="container">
 
-	<div class="col-sm-4">
+	<div class="center">
+		<h1 class="center text-muted">Profile</h1>
+		<hr>
+	</div>
 
-		<div class="card" style="width: 90%;">
-			<img src="{{oneUser.image}}" class="card-img-top" alt="...">
-			<div class="card-body center">
+	<div class="row">
 
-				<a href="/startChat/{{oneUser._id}}" class="btn btn-primary">
-					<i class="fa fa-commenting"></i>
-				</a>
+		<div class="col-sm-4">
 
-				{{#if smile}}
-				<a href="/deleteSmile/{{oneUser._id}}" class="btn btn-danger">
-					<i class="fa fa-smile-o" id="newSmile"></i>
-				</a>
-				{{!-- <script>
-					$(document).ready(function () {
-						setInterval(function () {
-							$('#newSmile').attr('style', 'color: white')
-						}, 10);
-						setInterval(function () {
-							$('#newSmile').attr('style', 'color: red')
-						}, 10);
-					})
-				</script> --}}
+			<div class="card" style="width: 100%;">
+				<img src="{{oneUser.image}}" class="card-img-top" alt="...">
+				<div class="card-body center">
 
-				{{else}}
-				<a href="/sendSmile/{{oneUser._id}}" class="btn btn-outline-danger">
-					<i class="fa fa-smile-o"></i>
-				</a>
-				{{/if}}
+					<a href="/startChat/{{oneUser._id}}" class="btn btn-primary">
+						<i class="fa fa-commenting"></i>
+					</a>
 
+					{{#if smile}}
+					<a href="/deleteSmile/{{oneUser._id}}" class="btn btn-danger">
+						<i class="fa fa-smile-o" id="newSmile"></i>
+					</a>
+					{{!-- <script>
+						$(document).ready(function () {
+							setInterval(function () {
+								$('#newSmile').attr('style', 'color: white')
+							}, 10);
+							setInterval(function () {
+								$('#newSmile').attr('style', 'color: red')
+							}, 10);
+						})
+					</script> --}}
+
+					{{else}}
+					<a href="/sendSmile/{{oneUser._id}}" class="btn btn-outline-danger">
+						<i class="fa fa-smile-o"></i>
+					</a>
+					{{/if}}
+
+				</div>
 			</div>
+
+		</div>
+
+		<div class="col-sm-8 card" id="profile-info" style="padding: 15px 25px;">
+			{{!-- <h3>Profile</h3> --}}
+			<h3 class="card-title"> {{oneUser.fullname}}</h3>
+			<small class="text-muted">Location</small>
+			<hr>
+
+			<p class="card-text">
+				<i class="fa fa-envelope text-muted"></i> {{oneUser.email}}
+			</p>
+
+			<p class="card-text">
+				<i class="fa fa-venus-mars text-muted"></i> {{oneUser.gender}}
+			</p>
+
+			<p class="card-text">
+				<i class="fa fa-file-text-o text-muted"></i> {{oneUser.about}}
+			</p>
+
+			{{#if oneUser.online}}
+			<p class="card-text green">
+				<i class="fa fa-circle green"></i> Online
+			</p>
+			{{else}}
+			<p class="card-text red">
+				<i class="fa fa-circle red"></i> Offline
+			</p>
+			{{/if}}
+
+
 		</div>
 
 	</div>
 
-	<div class="col-sm-8 card" id="profile-info" style="padding: 15px 25px;">
-		{{!-- <h3>Profile</h3> --}}
-		<h3 class="card-title"> {{oneUser.fullname}}</h3>
-		<small class="text-muted">Location</small>
-		<hr>
+	<div class="container" style="padding-bottom: 10px; border-radius: 4px;">
 
-		<p class="card-text">
-			<i class="fa fa-envelope"></i> {{oneUser.email}}
-		</p>
+		<h2 class="center text-muted" style="padding: 20px 25px; margin-top: 10px;">Posts</h2>
 
-		<p class="card-text">
-			<i class="fa fa-venus-mars"></i> {{oneUser.gender}}
-		</p>
+		{{#each publicPosts}}
 
-		<p class="card-text">
-			<i class="fa fa-file-text-o"></i> {{oneUser.about}}
-		</p>
+		<div class="card" style="margin-bottom: 15px; padding: 15px;">
+			<div class="media">
+				<img src="{{postUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+				<div class="media-body">
 
-	</div>
+					<h5 class="mt-0 text-muted">{{title}}
+						<small> <i class="{{icon}}"></small></i>
+					</h5>
 
-</div>
+					<a href="/userProfile/{{postUser._id}}">
+						<h5 class="mt-0 text-muted"><small>{{postUser.fullname}}</small></h5>
+					</a>
 
-<div class="container" style="padding-bottom: 10px; border-radius: 4px;">
+					<p>{{body}}</p>
 
-	<h2 class="center text-muted" style="padding: 20px 25px; margin-top: 10px;">Posts</h2>
+					{{#if image}}
+					<a href="/fullPost/{{_id}}">
+						<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
+						<br>
+					</a>
+					{{/if}}
 
-	{{#each publicPosts}}
+					<small class="text-muted">{{getLastMoment date 'hour'}}</small>
+					<h4>
+						<a href="/likePost/{{_id}}" class="red"> <i class="fa fa-heart-o"></i></a>
 
-	<div class="card" style="margin-bottom: 15px; padding: 15px;">
-		<div class="media">
-			<img src="{{postUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
-			<div class="media-body">
+						{{#if allowComments}}
+						<a href="/fullPost/{{_id}}" class=""> <i class="fa fa-comment-o"></i></a>
+						{{/if}}
+					</h4>
 
-				<h5 class="mt-0 text-muted">{{title}}
-					<small> <i class="{{icon}}"></small></i>
-				</h5>
-
-				<a href="/userProfile/{{postUser._id}}">
-					<h5 class="mt-0 text-muted"><small>{{postUser.fullname}}</small></h5>
-				</a>
-
-				<p>{{body}}</p>
-
-				{{#if image}}
-				<a href="/fullPost/{{_id}}">
-					<img src="{{image}}" class="img-fluid" style="border-radius: 4px;">
-					<br>
-				</a>
-				{{/if}}
-
-				<small class="text-muted">{{getLastMoment date 'hour'}}</small>
-				<h4>
-					<a href="/likePost/{{_id}}" class="red"> <i class="fa fa-heart-o"></i></a>
 
 					{{#if allowComments}}
-					<a href="/fullPost/{{_id}}" class=""> <i class="fa fa-comment-o"></i></a>
+					{{#each comments}}
+					<hr>
+
+					<div class="media mt-3">
+
+						<a class="mr-3" href="/userProfile/{{commentUser._id}}">
+							<img src="{{commentUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+						</a>
+
+						<div class="media-body">
+							<p>{{commentBody}}</p>
+							<small>{{getLastMoment date 'hour'}}</small>
+						</div>
+
+					</div>
+
+					{{/each}}
 					{{/if}}
-				</h4>
 
+					{{#if likes}}
+					{{#each likes}}
+					<hr>
 
-				{{#if allowComments}}
-				{{#each comments}}
-				<hr>
+					<div class="media mt-3">
 
-				<div class="media mt-3">
+						<a class="mr-3" href="/userProfile/{{likeUser._id}}">
+							<img src="{{likeUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
+						</a>
 
-					<a class="mr-3" href="/userProfile/{{commentUser._id}}">
-						<img src="{{commentUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
-					</a>
+						<div class="media-body">
+							<h5 class="mt-0"><i class="fa fa-heart red"></i></h5>
+							<small>{{getLastMoment date 'hour'}}</small>
+						</div>
 
-					<div class="media-body">
-						<p>{{commentBody}}</p>
-						<small>{{getLastMoment date 'hour'}}</small>
 					</div>
 
-				</div>
-
-				{{/each}}
-				{{/if}}
-
-				{{#if likes}}
-				{{#each likes}}
-				<hr>
-
-				<div class="media mt-3">
-
-					<a class="mr-3" href="/userProfile/{{likeUser._id}}">
-						<img src="{{likeUser.image}}" class="mr-3 chatroom-users" style="border-radius: 4px;">
-					</a>
-
-					<div class="media-body">
-						<h5 class="mt-0"><i class="fa fa-heart red"></i></h5>
-						<small>{{getLastMoment date 'hour'}}</small>
-					</div>
+					{{/each}}
+					{{/if}}
 
 				</div>
-
-				{{/each}}
-				{{/if}}
-
 			</div>
 		</div>
+		{{else}}
+
+		<h3 class="text-muted center"><small> No posts found</small></h3>
+
+		{{/each}}
 	</div>
-	{{else}}
 
-	<h3 class="text-muted center"><small> No posts found</small></h3>
-
-	{{/each}}
 </div>
