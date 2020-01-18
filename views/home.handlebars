@@ -1,68 +1,76 @@
-<div class="text-center" style="margin: 35px 20px">
-	<img src="/img/matchacupC.png" width="200px">
-</div>
+<div class="container">
+
+	<div class="text-center" style="margin: 35px 20px">
+		<img src="/img/matchacupC.png" width="200px">
+	</div>
 
 
-<h1 class="center">Matcha</h1>
-<br>
-{{#if user}}
-<p>You are logged in</p>
-{{else}}
-<div class="row">
+	<h1 class="center">Matcha</h1>
+	<br>
+	{{#if user}}
+	<p>You are logged in</p>
+	{{else}}
+	<div class="row">
 
-	<div class="col-sm"></div>
+		<div class="col-sm"></div>
 
-	<div class="col-sm-5">
+		<div class="col-sm-5">
 
-		<h1 class="center">
-			<a href="/auth/facebook">
-				<button type="button" class="btn btn-primary btn-lg">Login with Facebook</button>
-			</a>
-		</h1>
+			<h1 class="center">
+				<a href="/auth/facebook">
+					<button type="button" class="btn btn-primary btn-lg"> <i class="fa fa-facebook-official mr-2"></i>
+						Login with Facebook</button>
+				</a>
+			</h1>
 
-		<h1 class="center">
-			<a href="/auth/google">
-				<button type="button" class="btn btn-danger btn-lg">Login with Google</button>
-			</a>
-		</h1>
+			<h1 class="center">
+				<a href="/auth/google">
+					<button type="button" class="btn btn-danger btn-lg"> <i class="fa fa-google mr-2"></i>
+						Login
+						with Google</button>
+				</a>
+			</h1>
 
-		<p class="center">or</p>
+			<p class="center">or</p>
 
-		<form action="/login" method="POST">
+			<form action="/login" method="POST">
 
-			{{#each success}}
-			<div class="alert alert-success">
-				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-				{{text}}
-			</div>
-			{{/each}}
+				{{#each success}}
+				<div class="alert alert-success">
+					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					{{text}}
+				</div>
+				{{/each}}
 
-			{{#each errors}}
-			<div class="alert alert-danger">
-				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-				{{text}}
-			</div>
-			{{/each}}
+				{{#each errors}}
+				<div class="alert alert-danger">
+					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+					{{text}}
+				</div>
+				{{/each}}
 
-			<div class="form-group">
-				<label for="email"> Email</label>
-				<input type="text" name="email" id="email" class="form-control">
-			</div>
+				<div class="form-group">
+					<label for="email"> Email</label>
+					<input type="text" name="email" id="email" class="form-control">
+				</div>
 
-			<div class="form-group">
-				<label for="password">Password</label>
-				<input type="password" name="password" id="password" class="form-control">
-			</div>
-			<button type="submit" class="btn btn-primary">Login</button>
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input type="password" name="password" id="password" class="form-control">
+				</div>
+				<button type="submit" class="btn btn-primary">Login</button>
 
-		</form>
+			</form>
 
-		<a href="/newAccount" class="pull-right">Register</a>
+			<a href="/retrievePwd" class="">Forgot Password</a>
+			<a href="/newAccount" class="pull-right">Register</a>
+
+		</div>
+
+		<div class="col-sm"></div>
 
 	</div>
 
-	<div class="col-sm"></div>
+	{{/if}}
 
 </div>
-
-{{/if}}

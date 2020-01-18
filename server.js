@@ -250,21 +250,21 @@ app.get('/deleteAccount', requireLogin, (req, res) => {
 		_id: req.user._id
 	}).then(() => {
 		res.render('accDeleted', {
-			title: 'Deleted'
+			title: 'Account Deleted'
 		});
 	});
 });
 
 // Creating new Local account
-app.get("/newAccount", (req, res) => {
+app.get("/newAccount", ensureGuest, (req, res) => {
 	res.render("newAccount", {
 		title: "Signup"
 	});
 });
 
 // Handle signup form
-app.post("/signup", (req, res) => {
-	console.log(req.body);
+app.post("/signup", ensureGuest, (req, res) => {
+	//console.log(req.body);
 	let errors = [];
 
 	if (req.body.password !== req.body.password2) {
@@ -280,7 +280,7 @@ app.post("/signup", (req, res) => {
 	if (errors.length > 0) {
 		res.render("newAccount", {
 			errors: errors,
-			title: "Error",
+			title: "Register",
 			fullname: req.body.username,
 			email: req.body.email,
 			password: req.body.password,
@@ -296,7 +296,7 @@ app.post("/signup", (req, res) => {
 					text: "Email already exists"
 				});
 				res.render("newAccount", {
-					title: "Signup",
+					title: "Register",
 					errors: errors
 				});
 			} else {
@@ -317,6 +317,7 @@ app.post("/signup", (req, res) => {
 							text: "Account successfully created"
 						});
 						res.render("home", {
+							title: 'Home',
 							success: success
 						});
 					}
@@ -335,7 +336,7 @@ app.post(
 	})
 );
 
-app.get("/loginErrors", (req, res) => {
+app.get("/loginErrors", ensureGuest, (req, res) => {
 	let errors = [];
 	errors.push({
 		text: "User not found or incorrect password"
@@ -343,6 +344,66 @@ app.get("/loginErrors", (req, res) => {
 	res.render("home", {
 		errors: errors
 	});
+});
+
+//forgot password route
+app.get('/retrievePwd', ensureGuest, (req, res) => {
+	res.render('retrievePwd', {
+		title: 'Reset Password'
+	});
+});
+
+//reset the password from form input
+app.post('/retrievePwd', ensureGuest, (req, res) => {
+	let email = req.body.email.trim();
+	let pwd1 = req.body.password.trim();
+	let pwd2 = req.body.password2.trim();
+
+	let errors = [];
+
+	if (pwd1 !== pwd2) {
+		errors.push({
+			text: "Passwords do not match"
+		});
+	}
+	if (pwd1.length < 6) {
+		errors.push({
+			text: "Password must be mininum 6 characters"
+		});
+	}
+	if (errors.length > 0) {
+		res.render("retrievePwd", {
+			errors: errors,
+			title: "Error",
+			email: email,
+			password: pwd1,
+			password2: pwd2
+		});
+	}
+
+	User.findOne({
+		email: email
+	}).then((user) => {
+		let salt = bcrypt.genSaltSync(10);
+		let hash = bcrypt.hashSync(pwd1, salt);
+
+		user.password = hash;
+		user.save((err, user) => {
+			if (err) {
+				throw err;
+			}
+			if (user) {
+				let success = [];
+				success.push({
+					text: "Password successfully updated"
+				});
+				res.render("home", {
+					success: success
+				});
+			};
+		});
+	});
+
 });
 
 // Handle get to upload images
@@ -391,7 +452,7 @@ app.get('/singles', requireLogin, (req, res) => {
 		})
 		.then((singles) => {
 			res.render('singles', {
-				title: 'Singles',
+				title: 'Discover',
 				singles: singles
 			})
 		}).catch((err) => {
@@ -702,6 +763,10 @@ app.post('/charge10dollars', requireLogin, (req, res) => {
 					user.wallet += 20;
 					user.save()
 						.then(() => {
+							let success = [];
+							success.push({
+								text: "Payment successful"
+							});
 							res.render('success', {
 								title: 'Success',
 								charge: charge
