@@ -1,0 +1,50 @@
+<div class="container">
+
+	<div class="center">
+		<h1 class="center text-muted">{{title}}</h1>
+		<hr>
+	</div>
+
+	<div class="row">
+
+		{{#each userFriends}}
+		{{#each friends}}
+		{{#if isFriend}}
+
+		<div class="col-sm-4">
+
+			<div class="card" style="width: 100%; margin-top: 30px;">
+				<a href="/userProfile/{{friend._id}}">
+					<img src="{{friend.image}}" class="card-img-top" alt="...">
+				</a>
+				<div class="card-body center">
+					<h5 class="card-title text-muted">{{friend.fullname}}</h5>
+
+					<a href="/userProfile/{{friend._id}}">
+						<button class="btn btn-outline-primary"><i class="fa fa-user"></i></button>
+					</a>
+
+					<a href="/startChat/{{friend._id}}">
+						<button class="btn btn-outline-info"><i class="fa fa-commenting"></i></button>
+					</a>
+
+					<a href="/sendSmile/{{friend._id}}">
+						<button class="btn btn-outline-danger"><i class="fa fa-smile-o"></i></button>
+					</a>
+				</div>
+			</div>
+
+		</div>
+
+		{{/if}}
+		{{/each}}
+		{{else}}
+		<div class="center">
+			<h4 class="text-muted">No friends</h4>
+			<a href="/singles" class="btn btn-primary">Find friends</a>
+		</div>
+		{{/each}}
+
+	</div>
+
+</div>

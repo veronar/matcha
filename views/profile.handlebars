@@ -86,8 +86,93 @@
 
 	<br>
 
+	<div class="container" id="image-form" style="padding-bottom: 10px; border-radius: 4px;">
+
+		<h2 class="center text-muted" style="padding: 20px 25px; margin-top: 10px;">Photos</h2>
+		<hr>
+		<div class="center">
+			<button onclick="showUploadForm()" type="button" class="btn btn-primary btn-sm"
+				id="startUpload">Upload</button>
+		</div>
+
+		<div id="show-form" style="display: none">
+
+			<h4 class="text-muted center"><small><i class="fa fa-spinner" id="spinner"
+						style="display: none;"></i></small>
+			</h4>
+
+			<form action="/uploadPictures" method="POST" id="upload-form">
+				<div class="form-group">
+					<button type="button" class="btn btn-info upload-btn">Choose image</button>
+					<input type="file" name="upload" id="upload-input" style="display: none;">
+				</div>
+				<div class="form-group">
+					<button type="button" onclick="showSpinnerAndSubmit()" class="btn btn-success">Upload</button>
+				</div>
+			</form>
+		</div>
+
+		<script>
+			function showUploadForm() {
+				document.getElementById('startUpload').style.display = 'none';
+				document.getElementById('show-form').style.display = 'block';
+			}
+
+			function showSpinnerAndSubmit() {
+				document.getElementById('upload-form').style.display = 'none';
+				document.getElementById('spinner').style.display = 'block';
+				setTimeout(function () {
+					document.getElementById('upload-form').submit();
+				}, 7000);
+			}
+		</script>
+
+		<div class="row">
+			{{#each user.pictures}}
+			<div class="col-sm-2">
+				<div class="card" style="width: 100%;">
+					<a href="#">
+						<img src="{{image}}" class="card-img-top" alt="...">
+					</a>
+				</div>
+			</div>
+			{{else}}
+			<div class="center">
+				<h4 class="text-muted"><small>No images</small></h4>
+			</div>
+			{{/each}}
+		</div>
+		<hr>
+	</div>
+
+
+	{{#if user.friends}}
 	<div class="container" style="padding-bottom: 10px; border-radius: 4px;">
 
+		<h2 class="center text-muted" style="padding: 20px 25px; margin-top: 10px;">Friends</h2>
+		<hr>
+		<div class="row">
+			{{#each user.friends}}
+			<div class="col-sm-2">
+				<div class="card" style="width: 100%;">
+					<a href="/userProfile/{{friend._id}}">
+						<img src="{{friend.image}}" class="card-img-top" alt="...">
+					</a>
+					<div class="center">
+						<p class="card-title text-muted">{{friend.fullname}}</p>
+					</div>
+				</div>
+			</div>
+
+			{{else}}
+
+			{{/each}}
+		</div>
+	</div>
+	<hr>
+	{{/if}}
+
+	<div class="container" style="padding-bottom: 10px; border-radius: 4px;">
 		<h2 class="center text-muted" style="padding: 20px 25px; margin-top: 10px;">My Posts</h2>
 
 		{{#each posts}}

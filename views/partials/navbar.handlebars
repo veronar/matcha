@@ -10,8 +10,7 @@
 	<a href="/showSmile/{{newSmile._id}}" class="red" style="margin: 0 10px; font-size: 25px;">
 		<i class="fa fa-smile-o"></i>
 	</a>
-
-	<script>
+	{{!-- <script>
 		$(document).ready(function () {
 			setInterval(function () {
 				$('.fa-smile-o').attr('style', 'color: red');
@@ -20,18 +19,16 @@
 				$('.fa-smile-o').attr('style', 'color: white');
 			}, 30);
 		});
-	</script>
-
+	</script> --}}
 	{{else}}
 	{{!-- <a class="navbar-brand" href="#">{{title}}</a> --}}
 	{{/if}}
 
 	{{#if unread}}
 	<a href="/chats" class="navbar-brand" style="margin: 0 10px;">
-		<i class="fa fa-envelope-o" id="letter"></i>
+		<i class="fa fa-envelope" id="letter"></i>
 	</a>
-
-	<script>
+	{{!-- <script>
 		$(document).ready(function () {
 			setInterval(function () {
 				$('#letter').attr('style', 'color: red');
@@ -40,9 +37,30 @@
 				$('#letter').attr('style', 'color: white');
 			}, 30);
 		});
-	</script>
-
+	</script> --}}
 	{{/if}}
+
+	{{#each user}}
+	{{#each friends}}
+	{{#if isFriend}}
+
+	{{else}}
+	<a href="/showFriendRequest/{{friend._id}}" class="navbar-brand" style="margin: 0 10px;">
+		<i class="fa fa-user-plus" id="addUser"></i>
+	</a>
+	{{!-- <script>
+		$(document).ready(function () {
+			setInterval(function () {
+				$('#addUser').attr('style', 'color: red');
+			}, 10);
+			setInterval(function () {
+				$('#addUser').attr('style', 'color: white');
+			}, 30);
+		});
+	</script> --}}
+	{{/if}}
+	{{/each}}
+	{{/each}}
 
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 		aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +91,10 @@
 
 			<li class="nav-item">
 				<a class="nav-link" href="/singles">People</a>
+			</li>
+
+			<li class="nav-item">
+				<a class="nav-link" href="/friends">Friends</a>
 			</li>
 
 			<li class="nav-item">

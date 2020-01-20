@@ -6,7 +6,7 @@
 	</div>
 
 	<div class="row">
-		
+
 		{{#each singles}}
 
 		<div class="col-sm-4" style="margin-bottom: 35px;">
@@ -27,6 +27,10 @@
 
 					<a href="/sendSmile/{{_id}}">
 						<button class="btn btn-outline-danger"><i class="fa fa-smile-o"></i></button>
+					</a>
+
+					<a href="/sendFriendRequest/{{_id}}">
+						<button class="btn btn-outline-success"><i class="fa fa-user-plus"></i></button>
 					</a>
 
 					{{#if online}}

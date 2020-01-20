@@ -1,0 +1,26 @@
+<div class="container">
+
+	<div class="center">
+		<h1 class="center text-muted">{{title}}</h1>
+		<hr>
+	</div>
+
+
+	<div class="row">
+		<div class="col-sm-4">
+
+			<div class="card" style="width: 100%; margin-top: 30px;">
+				<a href="/userProfile/{{newFriend._id}}">
+					<img src="{{newFriend.image}}" class="card-img-top" alt="...">
+				</a>
+				<div class="card-body center">
+					<h5 class="card-title text-muted">{{newFriend.fullname}}</h5>
+					<a href="/acceptFriend/{{newFriend._id}}" class="btn btn-success">Accept</a>
+					<a href="/declineFriend/{{newFriend._id}}" class="btn btn-danger">Decline</a>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+</div>

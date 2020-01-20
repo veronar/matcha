@@ -166,59 +166,77 @@ app.get(
 // Profile page / display current users profile page
 app.get("/profile", requireLogin, (req, res) => {
 	User.findById({
-		_id: req.user._id
-	}).then(user => {
-		if (user) {
-			user.online = true;
-			user.save((err, user) => {
-				if (err) {
-					throw err;
-				} else {
-					Smile.findOne({
-						receiver: req.user._id,
-						receiverReceived: false
-					}).then((newSmile) => {
-						Chat.findOne({
-							$or: [{
-									receiver: req.user._id,
-									receiverRead: false
-								},
-								{
-									sender: req.user._id,
-									senderRead: false
-								}
-							]
-						}).then((unread) => {
-							Post.find({
-									postUser: req.user._id
-								}).populate('postUser')
-								.sort({
-									date: 'desc'
-								})
-								.then((posts) => {
-									if (posts) {
-										res.render('profile', {
-											title: 'My Profile',
-											user: user,
-											newSmile: newSmile,
-											unread: unread,
-											posts: posts
-										});
-									} else {
-										console.log('User does not have any posts');
-										res.render('profile', {
-											title: 'My Profile',
-											user: user,
-											newSmile: newSmile,
-											unread: unread
-										});
+			_id: req.user._id
+		}).populate('friends.friend')
+		.then(user => {
+			if (user) {
+				user.online = true;
+				user.save((err, user) => {
+					if (err) {
+						throw err;
+					} else {
+						Smile.findOne({
+							receiver: req.user._id,
+							receiverReceived: false
+						}).then((newSmile) => {
+							Chat.findOne({
+								$or: [{
+										receiver: req.user._id,
+										receiverRead: false
+									},
+									{
+										sender: req.user._id,
+										senderRead: false
 									}
-								});
+								]
+							}).then((unread) => {
+								Post.find({
+										postUser: req.user._id
+									}).populate('postUser')
+									.sort({
+										date: 'desc'
+									})
+									.then((posts) => {
+										if (posts) {
+											res.render('profile', {
+												title: 'My Profile',
+												user: user,
+												newSmile: newSmile,
+												unread: unread,
+												posts: posts
+											});
+										} else {
+											console.log('User does not have any posts');
+											res.render('profile', {
+												title: 'My Profile',
+												user: user,
+												newSmile: newSmile,
+												unread: unread
+											});
+										}
+									});
+							});
 						});
-					});
-				}
-			});
+					}
+				});
+			}
+		});
+});
+
+//upload pictures to profile
+app.post('/uploadPictures', requireLogin, (req, res) => {
+	User.findById({
+		_id: req.user._id
+	}).then((user) => {
+		const newImage = {
+			image: `https://matcha-vesingh.s3.amazonaws.com/${req.body.upload}`,
+			date: new Date()
 		}
+		user.pictures.push(newImage);
+		user.save()
+			.then(() => {
+				res.redirect('/profile');
+			});
 	});
 });
 
@@ -463,27 +481,28 @@ app.get('/singles', requireLogin, (req, res) => {
 // SIngle user profile page
 app.get('/userProfile/:id', requireLogin, (req, res) => {
 	User.findById({
-		_id: req.params.id
-	}).then((user) => {
-		Smile.findOne({
-			receiver: req.params.id
-		}).then((smile) => {
-			Post.find({
-					status: 'public',
-					postUser: user._id
-				}).populate('postUser')
-				.populate('comments.commentUser')
-				.populate('likes.likeUser')
-				.then((publicPosts) => {
-					res.render('userProfile', {
-						title: 'Profile',
-						oneUser: user,
-						smile: smile,
-						publicPosts: publicPosts
+			_id: req.params.id
+		}).populate('friends.friend')
+		.then((user) => {
+			Smile.findOne({
+				receiver: req.params.id
+			}).then((smile) => {
+				Post.find({
+						status: 'public',
+						postUser: user._id
+					}).populate('postUser')
+					.populate('comments.commentUser')
+					.populate('likes.likeUser')
+					.then((publicPosts) => {
+						res.render('userProfile', {
+							title: 'Profile',
+							oneUser: user,
+							smile: smile,
+							publicPosts: publicPosts,
+						});
 					});
-				});
+			});
 		});
-	});
 });
 
 //Start chat process / route
@@ -1121,6 +1140,140 @@ app.post('/leaveComment/:id', requireLogin, (req, res) => {
 				res.redirect(`/fullPost/${post._id}`);
 			}
 		});
+	});
+});
+
+// start freind request process
+app.get('/sendFriendRequest/:id', requireLogin, (req, res) => {
+	User.findOne({
+		_id: req.params.id
+	}).then((user) => {
+		let newFriendRequest = {
+			friend: req.user._id
+		}
+
+		user.friends.push(newFriendRequest);
+		user.save((err, user) => {
+			if (err) {
+				throw err;
+			}
+			if (user) {
+				res.render('friends/friendRequest', {
+					title: 'Friend Requests',
+					newFriend: user
+				});
+			}
+		});
+	});
+});
+
+//show friend requests received
+app.get('/showFriendRequest/:id', requireLogin, (req, res) => {
+	User.findOne({
+		_id: req.params.id
+	}).then((userRequest) => {
+		res.render('friends/showFriendRequest', {
+			title: 'Friend Requests',
+			newFriend: userRequest
+		});
+	});
+});
+
+//Accept friend request
+app.get('/acceptFriend/:id', requireLogin, (req, res) => {
+	User.findById({
+			_id: req.user._id
+		}).populate('friends.friend')
+		.then((user) => {
+			user.friends.filter((friend) => {
+				if (friend._id = req.params.id) {
+					friend.isFriend = true;
+
+					user.save()
+						.then(() => {
+							User.findById({
+								_id: req.params.id
+							}).then((requestSender) => {
+								let newFriend = {
+									friend: req.user._id,
+									isFriend: true
+								}
+
+								requestSender.friends.push(newFriend);
+								requestSender.save()
+									.then(() => {
+										User.findById({
+												_id: req.user._id
+											}).populate('friends.friend')
+											.sort({
+												date: 'desc'
+											})
+											.then((user) => {
+												res.render('friends/friendAccepted', {
+													title: "Friends",
+													userInfo: user
+												});
+											});
+									})
+							})
+						});
+				} else {
+					res.render('friends/404', {
+						title: "Page Not Found"
+					});
+				}
+			});
+		}).catch((err) => {
+			console.log(err);
+		});
+});
+
+//decline friend request
+app.get('/declineFriend/:id', requireLogin, (req, res) => {
+	User.findById({
+			_id: req.user._id
+		}).populate('friends.friend')
+		.then((user) => {
+			user.friends.filter((friend) => {
+				if (friend._id = req.params.id) {
+					user.friends.pop(friend);
+					user.save()
+						.then(() => {
+							User.findOne({
+								_id: req.params.id
+							}).then((friend) => {
+								res.render('friends/friendDeclined', {
+									title: "Friend Requests",
+									friend: friend
+								});
+							})
+						})
+				} else {
+					res.render('friends/404', {
+						title: "Page Not Found"
+					});
+				}
+			});
+		});
+});
+
+// show all friends
+app.get('/friends', requireLogin, (req, res) => {
+	User.findById({
+			_id: req.user._id
+		}).populate('friends.friend')
+		.then((user) => {
+			res.render('friends/friends', {
+				title: "Friends",
+				userFriends: user
+			});
+		});
+});
+
+// page not found
+app.get('/404', (req, res) => {
+	res.render('friends/404', {
+		title: '404'
 	});
 });
 

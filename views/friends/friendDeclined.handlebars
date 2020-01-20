@@ -6,18 +6,19 @@
 	</div>
 
 	<div class="row">
-		{{!-- {{#each smile}} --}}
-
 		<div class="col-sm-4">
+
 			<div class="card" style="width: 100%; margin-top: 30px;">
-				<img src="{{smile.sender.image}}" class="card-img-top" alt="...">
+				<a href="/userProfile/{{friend._id}}">
+					<img src="{{friend.image}}" class="card-img-top" alt="...">
+				</a>
 				<div class="card-body center">
-					<a href="/sendSmile/{{smile.sender._id}}" class="btn btn-danger">Smile back</a>
+					<h5 class="card-title text-muted">{{friend.fullname}}</h5>
+					<p class="card-text red">Friend request declined!</p>
 				</div>
 			</div>
-		</div>
 
-		{{!-- {{/each}} --}}
+		</div>
 	</div>
 
 </div>
