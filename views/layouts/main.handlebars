@@ -35,12 +35,22 @@
 		{{{body}}}
 	</div>
 
+	{{#if user}}
+	<input type="hidden" id="ID" value="{{user._id}}">
+	{{else}}
+
+	{{/if}}
+
+
 	{{> footer}}
 
 	<script src="https://code.jquery.com/jquery-3.4.1.js"
 		integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
 
 	<script src="/js/script.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/js/socket.js"></script>
 
 </body>
 

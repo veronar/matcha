@@ -8,6 +8,8 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const bcrypt = require("bcryptjs");
 const formidable = require("formidable");
+const socket = require("socket.io");
+const http = require("http");
 // const cookieParser = require('cookie-parser');
 
 //Load models
@@ -23,7 +25,7 @@ const app = express();
 const Keys = require("./config/keys");
 
 // even though stripe is an npm, it needs the key from keys.js. so we have to load it only after we get keys.js in here
-const stripe = require('stripe')(Keys.StripeSecretKey);
+const stripe = require("stripe")(Keys.StripeSecretKey);
 
 // Load helpers
 const {
@@ -37,11 +39,11 @@ const {
 //bring in moment.js to use '? hours ago"
 const {
 	getLastMoment
-} = require('./helpers/moment');
+} = require("./helpers/moment");
 //bring in helper for payment notification, ie wallet is empty
 const {
 	walletChecker
-} = require('./helpers/wallet');
+} = require("./helpers/wallet");
 
 //use body-parser middleware
 app.use(
@@ -87,14 +89,15 @@ require("./passport/google");
 require("./passport/local");
 
 //connect to mLab MongoDB / mongoAtlas
-mongoose.connect(Keys.MongoDB, {
+mongoose
+	.connect(Keys.MongoDB, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
 	.then(() => {
 		console.log("Server is connected to MongoDB");
 	})
-	.catch(err => {
+	.catch((err) => {
 		console.log(err);
 	});
 
@@ -143,7 +146,7 @@ app.get(
 app.get(
 	"/auth/facebook/callback",
 	passport.authenticate("facebook", {
-		successRedirect: "/profile",
+		successRedirect: "/askMore",
 		failureRedirect: "/"
 	})
 );
@@ -158,7 +161,7 @@ app.get(
 app.get(
 	"/auth/google/callback",
 	passport.authenticate("google", {
-		successRedirect: "/profile",
+		successRedirect: "/askMore",
 		failureRedirect: "/"
 	})
 );
@@ -167,8 +170,9 @@ app.get(
 app.get("/profile", requireLogin, (req, res) => {
 	User.findById({
 			_id: req.user._id
-		}).populate('friends.friend')
-		.then(user => {
+		})
+		.populate("friends.friend")
+		.then((user) => {
 			if (user) {
 				user.online = true;
 				user.save((err, user) => {
@@ -192,23 +196,24 @@ app.get("/profile", requireLogin, (req, res) => {
 							}).then((unread) => {
 								Post.find({
 										postUser: req.user._id
-									}).populate('postUser')
+									})
+									.populate("postUser")
 									.sort({
-										date: 'desc'
+										date: "desc"
 									})
 									.then((posts) => {
 										if (posts) {
-											res.render('profile', {
-												title: 'My Profile',
+											res.render("profile", {
+												title: "My Profile",
 												user: user,
 												newSmile: newSmile,
 												unread: unread,
 												posts: posts
 											});
 										} else {
-											console.log('User does not have any posts');
-											res.render('profile', {
-												title: 'My Profile',
+											console.log("User does not have any posts");
+											res.render("profile", {
+												title: "My Profile",
 												user: user,
 												newSmile: newSmile,
 												unread: unread
@@ -224,24 +229,23 @@ app.get("/profile", requireLogin, (req, res) => {
 });
 
 //upload pictures to profile
-app.post('/uploadPictures', requireLogin, (req, res) => {
+app.post("/uploadPictures", requireLogin, (req, res) => {
 	User.findById({
 		_id: req.user._id
 	}).then((user) => {
 		const newImage = {
 			image: `https://matcha-vesingh.s3.amazonaws.com/${req.body.upload}`,
 			date: new Date()
-		}
+		};
 		user.pictures.push(newImage);
-		user.save()
-			.then(() => {
-				res.redirect('/profile');
-			});
+		user.save().then(() => {
+			res.redirect("/profile");
+		});
 	});
 });
 
 //delete picture
-app.get('/deletePicture/:id', requireLogin, (req, res) => {
+app.get("/deletePicture/:id", requireLogin, (req, res) => {
 	User.findById({
 		_id: req.user._id
 	}).then((user) => {
@@ -250,41 +254,42 @@ app.get('/deletePicture/:id', requireLogin, (req, res) => {
 			if (err) {
 				throw err;
 			} else {
-				res.redirect('/profile');
+				res.redirect("/profile");
 			}
 		});
 	});
 });
 
 // update profile page
-app.post('/updateProfile', requireLogin, (req, res) => {
+app.post("/updateProfile", requireLogin, (req, res) => {
 	User.findById({
 		_id: req.user._id
 	}).then((user) => {
 		user.fullname = req.body.fullname;
 		user.email = req.body.email;
 		user.gender = req.body.gender;
+		user.age = req.body.age;
 		user.about = req.body.about;
 		user.save(() => {
-			res.redirect('/profile');
+			res.redirect("/profile");
 		});
 	});
 });
 
 //confirmation delete account page
-app.get('/confirmDelete', requireLogin, (req, res) => {
-	res.render('confirmDelete', {
-		title: 'Delete Account'
+app.get("/confirmDelete", requireLogin, (req, res) => {
+	res.render("confirmDelete", {
+		title: "Delete Account"
 	});
 });
 
 // deleting the account page
-app.get('/deleteAccount', requireLogin, (req, res) => {
+app.get("/deleteAccount", requireLogin, (req, res) => {
 	User.deleteOne({
 		_id: req.user._id
 	}).then(() => {
-		res.render('accDeleted', {
-			title: 'Account Deleted'
+		res.render("accDeleted", {
+			title: "Account Deleted"
 		});
 	});
 });
@@ -323,7 +328,7 @@ app.post("/signup", ensureGuest, (req, res) => {
 	} else {
 		User.findOne({
 			email: req.body.email
-		}).then(user => {
+		}).then((user) => {
 			if (user) {
 				let errors = [];
 				errors.push({
@@ -351,7 +356,7 @@ app.post("/signup", ensureGuest, (req, res) => {
 							text: "Account successfully created"
 						});
 						res.render("home", {
-							title: 'Welcome',
+							title: "Welcome",
 							success: success
 						});
 					}
@@ -365,7 +370,7 @@ app.post("/signup", ensureGuest, (req, res) => {
 app.post(
 	"/login",
 	passport.authenticate("local", {
-		successRedirect: "/profile",
+		successRedirect: "/askMore",
 		failureRedirect: "/loginErrors"
 	})
 );
@@ -380,15 +385,46 @@ app.get("/loginErrors", ensureGuest, (req, res) => {
 	});
 });
 
+//Ask user to complete profile
+app.get('/askMore', requireLogin, (req, res) => {
+	User.findById({
+		_id: req.user._id
+	}).then((user) => {
+		if (!user.gender || !user.age) {
+			res.render('askMore', {
+				title: 'Complete Profile',
+				user: user
+			})
+		} else {
+			res.redirect('/profile');
+		}
+	})
+});
+
+//complete age and gender from post form
+app.post('/askMore', requireLogin, (req, res) => {
+	User.findById({
+		_id: req.user._id
+	}).then((user) => {
+		user.gender = req.body.gender;
+		user.age = req.body.age;
+
+		user.save()
+			.then(() => {
+				res.redirect('profile');
+			});
+	});
+});
+
 //forgot password route
-app.get('/retrievePwd', ensureGuest, (req, res) => {
-	res.render('retrievePwd', {
-		title: 'Reset Password'
+app.get("/retrievePwd", ensureGuest, (req, res) => {
+	res.render("retrievePwd", {
+		title: "Reset Password"
 	});
 });
 
 //reset the password from form input
-app.post('/retrievePwd', ensureGuest, (req, res) => {
+app.post("/retrievePwd", ensureGuest, (req, res) => {
 	let email = req.body.email.trim();
 	let pwd1 = req.body.password.trim();
 	let pwd2 = req.body.password2.trim();
@@ -434,10 +470,9 @@ app.post('/retrievePwd', ensureGuest, (req, res) => {
 				res.render("home", {
 					success: success
 				});
-			};
+			}
 		});
 	});
-
 });
 
 // Handle get to upload images
@@ -469,7 +504,7 @@ app.post("/uploadFile", requireLogin, uploadImage.any(), (req, res) => {
 	form.on("file", (field, file) => {
 		console.log(file);
 	});
-	form.on("error", err => {
+	form.on("error", (err) => {
 		console.log(err);
 	});
 	form.on("end", () => {
@@ -479,42 +514,45 @@ app.post("/uploadFile", requireLogin, uploadImage.any(), (req, res) => {
 });
 
 //handle get route for fidning users
-app.get('/singles', requireLogin, (req, res) => {
+app.get("/singles", requireLogin, (req, res) => {
 	User.find({})
 		.sort({
-			date: 'desc'
+			date: "desc"
 		})
 		.then((singles) => {
-			res.render('singles', {
-				title: 'Discover',
+			res.render("singles", {
+				title: "Discover",
 				singles: singles
-			})
-		}).catch((err) => {
+			});
+		})
+		.catch((err) => {
 			console.log(err);
 		});
 });
 
 // SIngle user profile page
-app.get('/userProfile/:id', requireLogin, (req, res) => {
+app.get("/userProfile/:id", requireLogin, (req, res) => {
 	User.findById({
 			_id: req.params.id
-		}).populate('friends.friend')
+		})
+		.populate("friends.friend")
 		.then((user) => {
 			Smile.findOne({
 				receiver: req.params.id
 			}).then((smile) => {
 				Post.find({
-						status: 'public',
+						status: "public",
 						postUser: user._id
-					}).populate('postUser')
-					.populate('comments.commentUser')
-					.populate('likes.likeUser')
+					})
+					.populate("postUser")
+					.populate("comments.commentUser")
+					.populate("likes.likeUser")
 					.then((publicPosts) => {
-						res.render('userProfile', {
-							title: 'Profile',
+						res.render("userProfile", {
+							title: "Profile",
 							oneUser: user,
 							smile: smile,
-							publicPosts: publicPosts,
+							publicPosts: publicPosts
 						});
 					});
 			});
@@ -522,7 +560,7 @@ app.get('/userProfile/:id', requireLogin, (req, res) => {
 });
 
 //Start chat process / route
-app.get('/startChat/:id', requireLogin, (req, res) => {
+app.get("/startChat/:id", requireLogin, (req, res) => {
 	Chat.findOne({
 		sender: req.params.id,
 		receiver: req.user._id
@@ -579,19 +617,20 @@ app.get('/startChat/:id', requireLogin, (req, res) => {
 });
 
 // display chat room
-app.get('/chat/:id', requireLogin, (req, res) => {
+app.get("/chat/:id", requireLogin, (req, res) => {
 	Chat.findById({
 			_id: req.params.id
-		}).populate('sender')
-		.populate('receiver')
-		.populate('chats.senderName')
-		.populate('chats.receiverName')
+		})
+		.populate("sender")
+		.populate("receiver")
+		.populate("chats.senderName")
+		.populate("chats.receiverName")
 		.then((chat) => {
 			User.findOne({
 				_id: req.user._id
 			}).then((user) => {
-				res.render('chatRoom', {
-					title: 'Chat',
+				res.render("chatRoom", {
+					title: "Chat",
 					user: user,
 					chat: chat
 				});
@@ -600,14 +639,15 @@ app.get('/chat/:id', requireLogin, (req, res) => {
 });
 
 // handiling submittin of messages in chatroom (form)
-app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
+app.post("/chat/:id", requireLogin, walletChecker, (req, res) => {
 	Chat.findOne({
 			_id: req.params.id,
 			sender: req.user._id
-		}).populate('sender')
-		.populate('receiver')
-		.populate('chats.senderName')
-		.populate('chats.receiverName')
+		})
+		.populate("sender")
+		.populate("receiver")
+		.populate("chats.senderName")
+		.populate("chats.receiverName")
 		.then((chat) => {
 			if (chat) {
 				//sender sends message here
@@ -633,12 +673,12 @@ app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
 								_id: chat._id
 							})
 							.sort({
-								date: 'desc'
+								date: "desc"
 							})
-							.populate('sender')
-							.populate('receiver')
-							.populate('chats.senderName')
-							.populate('chats.receiverName')
+							.populate("sender")
+							.populate("receiver")
+							.populate("chats.senderName")
+							.populate("chats.receiverName")
 							.then((chat) => {
 								User.findById({
 									_id: req.user._id
@@ -650,8 +690,8 @@ app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
 											throw err;
 										}
 										if (user) {
-											res.render('chatRoom', {
-												title: 'Chat',
+											res.render("chatRoom", {
+												title: "Chat",
 												chat: chat,
 												user: user
 											});
@@ -669,12 +709,12 @@ app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
 						receiver: req.user._id
 					})
 					.sort({
-						date: 'desc'
+						date: "desc"
 					})
-					.populate('sender')
-					.populate('receiver')
-					.populate('chats.senderName')
-					.populate('chats.receiverName')
+					.populate("sender")
+					.populate("receiver")
+					.populate("chats.senderName")
+					.populate("chats.receiverName")
 					.then((chat) => {
 						chat.senderRead = true;
 						chat.receiverRead = false;
@@ -698,12 +738,12 @@ app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
 										_id: chat._id
 									})
 									.sort({
-										date: 'desc'
+										date: "desc"
 									})
-									.populate('sender')
-									.populate('receiver')
-									.populate('chats.senderName')
-									.populate('chats.receiverName')
+									.populate("sender")
+									.populate("receiver")
+									.populate("chats.senderName")
+									.populate("chats.receiverName")
 									.then((chat) => {
 										User.findById({
 											_id: req.user._id
@@ -714,8 +754,8 @@ app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
 													throw err;
 												}
 												if (user) {
-													res.render('chatRoom', {
-														title: 'Chat',
+													res.render("chatRoom", {
+														title: "Chat",
 														user: user,
 														chat: chat
 													});
@@ -728,30 +768,34 @@ app.post('/chat/:id', requireLogin, walletChecker, (req, res) => {
 					});
 			}
 		});
-})
+});
 
 // find history of all chats (user based)
-app.get('/chats', requireLogin, (req, res) => {
+app.get("/chats", requireLogin, (req, res) => {
 	Chat.find({
 			receiver: req.user._id
-		}).populate('sender')
-		.populate('receiver')
-		.populate('chats.senderName')
-		.populate('chats.receiverName')
+		})
+		.populate("sender")
+		.populate("receiver")
+		.populate("chats.senderName")
+		.populate("chats.receiverName")
 		.sort({
-			date: 'desc'
-		}).then((received) => {
+			date: "desc"
+		})
+		.then((received) => {
 			Chat.find({
 					sender: req.user._id
-				}).populate('sender')
-				.populate('receiver')
-				.populate('chats.senderName')
-				.populate('chats.receiverName')
+				})
+				.populate("sender")
+				.populate("receiver")
+				.populate("chats.senderName")
+				.populate("chats.receiverName")
 				.sort({
-					date: 'desc'
-				}).then((sent) => {
-					res.render('chat/chats', {
-						title: 'Messages',
+					date: "desc"
+				})
+				.then((sent) => {
+					res.render("chat/chats", {
+						title: "Messages",
 						received: received,
 						sent: sent
 					});
@@ -760,140 +804,154 @@ app.get('/chats', requireLogin, (req, res) => {
 });
 
 //Delete chat
-app.get('/deleteChat/:id', requireLogin, (req, res) => {
+app.get("/deleteChat/:id", requireLogin, (req, res) => {
 	Chat.deleteOne({
 		_id: req.params.id
 	}).then(() => {
-		res.redirect('/chats');
+		res.redirect("/chats");
 	});
 });
 
 //to the payment page
-app.get('/payment', requireLogin, (req, res) => {
-	res.render('payment', {
-		title: 'Purchase',
+app.get("/payment", requireLogin, (req, res) => {
+	res.render("payment", {
+		title: "Purchase",
 		StripePublishableKey: Keys.StripePublishableKey
 	});
 });
 
 //charge client - payment process ($10)
-app.post('/charge10dollars', requireLogin, (req, res) => {
+app.post("/charge10dollars", requireLogin, (req, res) => {
 	console.log(req.body);
 	const amount = 1000;
-	stripe.customers.create({
-		email: req.body.stripeEmail,
-		source: req.body.stripeToken
-	}).then((customer) => {
-		stripe.charges.create({
-			amount: amount,
-			description: '$10 for 20 messages',
-			currency: 'usd',
-			customer: customer.id,
-			receipt_email: customer.email
-		}).then((charge) => {
-			if (charge) {
-				User.findById({
-					_id: req.user._id
-				}).then((user) => {
-					user.wallet += 20;
-					user.save()
-						.then(() => {
-							let success = [];
-							success.push({
-								text: "Payment successful"
+	stripe.customers
+		.create({
+			email: req.body.stripeEmail,
+			source: req.body.stripeToken
+		})
+		.then((customer) => {
+			stripe.charges
+				.create({
+					amount: amount,
+					description: "$10 for 20 messages",
+					currency: "usd",
+					customer: customer.id,
+					receipt_email: customer.email
+				})
+				.then((charge) => {
+					if (charge) {
+						User.findById({
+							_id: req.user._id
+						}).then((user) => {
+							user.wallet += 20;
+							user.save().then(() => {
+								let success = [];
+								success.push({
+									text: "Payment successful"
+								});
+								res.render("success", {
+									title: "Payment successful",
+									charge: charge
+								});
 							});
-							res.render('success', {
-								title: 'Payment successful',
-								charge: charge
-							})
 						});
+					}
+				})
+				.catch((err) => {
+					console.log(err);
 				});
-			}
-		}).catch((err) => {
+		})
+		.catch((err) => {
 			console.log(err);
 		});
-	}).catch((err) => {
-		console.log(err);
-	});
 });
 
 //charge client - payment process ($20)
-app.post('/charge20dollars', requireLogin, (req, res) => {
+app.post("/charge20dollars", requireLogin, (req, res) => {
 	console.log(req.body);
 	const amount = 2000;
-	stripe.customers.create({
-		email: req.body.stripeEmail,
-		source: req.body.stripeToken
-	}).then((customer) => {
-		stripe.charges.create({
-			amount: amount,
-			description: '$20 for 50 messages',
-			currency: 'usd',
-			customer: customer.id,
-			receipt_email: customer.email
-		}).then((charge) => {
-			if (charge) {
-				User.findById({
-					_id: req.user._id
-				}).then((user) => {
-					user.wallet += 50;
-					user.save()
-						.then(() => {
-							res.render('success', {
-								title: 'Payment successful',
-								charge: charge
-							})
+	stripe.customers
+		.create({
+			email: req.body.stripeEmail,
+			source: req.body.stripeToken
+		})
+		.then((customer) => {
+			stripe.charges
+				.create({
+					amount: amount,
+					description: "$20 for 50 messages",
+					currency: "usd",
+					customer: customer.id,
+					receipt_email: customer.email
+				})
+				.then((charge) => {
+					if (charge) {
+						User.findById({
+							_id: req.user._id
+						}).then((user) => {
+							user.wallet += 50;
+							user.save().then(() => {
+								res.render("success", {
+									title: "Payment successful",
+									charge: charge
+								});
+							});
 						});
+					}
+				})
+				.catch((err) => {
+					console.log(err);
 				});
-			}
-		}).catch((err) => {
+		})
+		.catch((err) => {
 			console.log(err);
 		});
-	}).catch((err) => {
-		console.log(err);
-	});
 });
 
 //charge client - payment process ($20)
-app.post('/charge50dollars', requireLogin, (req, res) => {
+app.post("/charge50dollars", requireLogin, (req, res) => {
 	console.log(req.body);
 	const amount = 5000;
-	stripe.customers.create({
-		email: req.body.stripeEmail,
-		source: req.body.stripeToken
-	}).then((customer) => {
-		stripe.charges.create({
-			amount: amount,
-			description: '$50 for 150 messages',
-			currency: 'usd',
-			customer: customer.id,
-			receipt_email: customer.email
-		}).then((charge) => {
-			if (charge) {
-				User.findById({
-					_id: req.user._id
-				}).then((user) => {
-					user.wallet += 150;
-					user.save()
-						.then(() => {
-							res.render('success', {
-								title: 'Payment successful',
-								charge: charge
-							})
+	stripe.customers
+		.create({
+			email: req.body.stripeEmail,
+			source: req.body.stripeToken
+		})
+		.then((customer) => {
+			stripe.charges
+				.create({
+					amount: amount,
+					description: "$50 for 150 messages",
+					currency: "usd",
+					customer: customer.id,
+					receipt_email: customer.email
+				})
+				.then((charge) => {
+					if (charge) {
+						User.findById({
+							_id: req.user._id
+						}).then((user) => {
+							user.wallet += 150;
+							user.save().then(() => {
+								res.render("success", {
+									title: "Payment successful",
+									charge: charge
+								});
+							});
 						});
+					}
+				})
+				.catch((err) => {
+					console.log(err);
 				});
-			}
-		}).catch((err) => {
+		})
+		.catch((err) => {
 			console.log(err);
 		});
-	}).catch((err) => {
-		console.log(err);
-	});
 });
 
-
 // get route to send smile
-app.get('/sendSmile/:id', requireLogin, (req, res) => {
+app.get("/sendSmile/:id", requireLogin, (req, res) => {
 	const newSmile = {
 		sender: req.user._id,
 		receiver: req.params.id,
@@ -910,21 +968,22 @@ app.get('/sendSmile/:id', requireLogin, (req, res) => {
 });
 
 // delte smile
-app.get('/deleteSmile/:id', requireLogin, (req, res) => {
+app.get("/deleteSmile/:id", requireLogin, (req, res) => {
 	Smile.deleteOne({
 		receiver: req.params.id,
 		sender: req.user._id
 	}).then(() => {
-		res.redirect(`/userProfile/${req.params.id}`)
+		res.redirect(`/userProfile/${req.params.id}`);
 	});
 });
 
 // Show smile sender
-app.get('/showSmile/:id', requireLogin, (req, res) => {
+app.get("/showSmile/:id", requireLogin, (req, res) => {
 	Smile.findOne({
 			_id: req.params.id
-		}).populate('sender')
-		.populate('receiver')
+		})
+		.populate("sender")
+		.populate("receiver")
 		.then((smile) => {
 			smile.receiverReceived = true;
 			smile.save((err, smile) => {
@@ -932,8 +991,8 @@ app.get('/showSmile/:id', requireLogin, (req, res) => {
 					throw err;
 				}
 				if (smile) {
-					res.render('smile/showSmile', {
-						title: 'New Smile',
+					res.render("smile/showSmile", {
+						title: "New Smile",
 						smile: smile
 					});
 				}
@@ -942,21 +1001,21 @@ app.get('/showSmile/:id', requireLogin, (req, res) => {
 });
 
 //get method to add post //I think he is creating a feed and this is to add an entry (post) to that feed
-app.get('/displayPostForm', requireLogin, (req, res) => {
-	res.render('post/displayPostForm', {
-		title: 'Create Post'
+app.get("/displayPostForm", requireLogin, (req, res) => {
+	res.render("post/displayPostForm", {
+		title: "Create Post"
 	});
 });
 
 //creating the post
-app.post('/createPost', requireLogin, (req, res) => {
+app.post("/createPost", requireLogin, (req, res) => {
 	let allowComments = Boolean;
 
 	if (req.body.allowComments) {
 		allowComments = true;
 	} else {
 		allowComments = false;
-	};
+	}
 
 	let pic = String;
 	if (req.body.image) {
@@ -972,70 +1031,69 @@ app.post('/createPost', requireLogin, (req, res) => {
 		image: pic,
 		postUser: req.user._id,
 		allowComments: allowComments,
-		date: new Date(),
+		date: new Date()
 	};
 
-	if (req.body.status === 'public') {
-		newPost.icon = 'fa fa-globe';
-	} else if (req.body.status === 'private') {
-		newPost.icon = 'fa fa-lock';
+	if (req.body.status === "public") {
+		newPost.icon = "fa fa-globe";
+	} else if (req.body.status === "private") {
+		newPost.icon = "fa fa-lock";
 	} else {
-		newPost.icon = 'fa fa-users';
-	};
+		newPost.icon = "fa fa-users";
+	}
 
-	new Post(newPost).save()
-		.then(() => {
-			if (req.body.status === 'private') {
-				res.redirect('/profile');
-			} else {
-				res.redirect('/posts');
-			}
-		});
+	new Post(newPost).save().then(() => {
+		if (req.body.status === "private") {
+			res.redirect("/profile");
+		} else {
+			res.redirect("/posts");
+		}
+	});
 });
 
 //display all public posts / feed
-app.get('/posts', requireLogin, (req, res) => {
+app.get("/posts", requireLogin, (req, res) => {
 	Post.find({
-			status: 'public'
-		}).populate('postUser')
+			status: "public"
+		})
+		.populate("postUser")
 		.sort({
-			date: 'desc'
+			date: "desc"
 		})
 		.then((posts) => {
-			res.render('post/posts', {
-				title: 'Feed',
+			res.render("post/posts", {
+				title: "Feed",
 				posts: posts
 			});
 		});
 });
 
 //Delete Posts
-app.get('/deletePost/:id', requireLogin, (req, res) => {
+app.get("/deletePost/:id", requireLogin, (req, res) => {
 	Post.deleteOne({
 		_id: req.params.id
 	}).then(() => {
-		res.redirect('/profile');
+		res.redirect("/profile");
 	});
 });
 
 //edit posts
-app.get('/editPost/:id', requireLogin, (req, res) => {
+app.get("/editPost/:id", requireLogin, (req, res) => {
 	Post.findById({
 		_id: req.params.id
 	}).then((post) => {
-		res.render('post/editPost', {
-			title: 'Edit Post',
+		res.render("post/editPost", {
+			title: "Edit Post",
 			post: post
 		});
 	});
 });
 
 //submit form to updates Save changes to post
-app.post('/editPost/:id', requireLogin, (req, res) => {
+app.post("/editPost/:id", requireLogin, (req, res) => {
 	Post.findByIdAndUpdate({
 		_id: req.params.id
 	}).then((post) => {
-
 		let allowComments = Boolean;
 		if (req.body.allowComments) {
 			allowComments = true;
@@ -1057,26 +1115,25 @@ app.post('/editPost/:id', requireLogin, (req, res) => {
 		post.image = pic;
 		post.date = new Date();
 
-		if (req.body.status === 'public') {
-			post.icon = 'fa fa-globe';
-		} else if (req.body.status === 'private') {
-			post.icon = 'fa fa-lock';
+		if (req.body.status === "public") {
+			post.icon = "fa fa-globe";
+		} else if (req.body.status === "private") {
+			post.icon = "fa fa-lock";
 		} else {
-			post.icon = 'fa fa-users';
-		};
-		post.save()
-			.then(() => {
-				if (req.body.status === 'private') {
-					res.redirect('/profile');
-				} else {
-					res.redirect('/posts');
-				}
-			});
+			post.icon = "fa fa-users";
+		}
+		post.save().then(() => {
+			if (req.body.status === "private") {
+				res.redirect("/profile");
+			} else {
+				res.redirect("/posts");
+			}
+		});
 	});
 });
 
 // Like a post
-app.get('/likePost/:id', requireLogin, (req, res) => {
+app.get("/likePost/:id", requireLogin, (req, res) => {
 	Post.findById({
 		_id: req.params.id
 	}).then((post) => {
@@ -1117,27 +1174,27 @@ app.get('/likePost/:id', requireLogin, (req, res) => {
 	});
 });
 
-
 //Display full post page
-app.get('/fullPost/:id', requireLogin, (req, res) => {
+app.get("/fullPost/:id", requireLogin, (req, res) => {
 	Post.findById({
 			_id: req.params.id
-		}).populate('postUser')
-		.populate('likes.likeUser')
-		.populate('comments.commentUser')
+		})
+		.populate("postUser")
+		.populate("likes.likeUser")
+		.populate("comments.commentUser")
 		.sort({
-			date: 'desc'
+			date: "desc"
 		})
 		.then((post) => {
-			res.render('post/fullPost', {
-				title: 'Post',
+			res.render("post/fullPost", {
+				title: "Post",
 				post: post
 			});
 		});
 });
 
 //submit comment to post
-app.post('/leaveComment/:id', requireLogin, (req, res) => {
+app.post("/leaveComment/:id", requireLogin, (req, res) => {
 	Post.findById({
 		_id: req.params.id
 	}).then((post) => {
@@ -1145,7 +1202,7 @@ app.post('/leaveComment/:id', requireLogin, (req, res) => {
 			commentUser: req.user._id,
 			commentBody: req.body.commentBody,
 			date: new Date()
-		}
+		};
 
 		post.comments.push(newComment);
 		post.save((err, post) => {
@@ -1160,13 +1217,13 @@ app.post('/leaveComment/:id', requireLogin, (req, res) => {
 });
 
 // start freind request process
-app.get('/sendFriendRequest/:id', requireLogin, (req, res) => {
+app.get("/sendFriendRequest/:id", requireLogin, (req, res) => {
 	User.findOne({
 		_id: req.params.id
 	}).then((user) => {
 		let newFriendRequest = {
 			friend: req.user._id
-		}
+		};
 
 		user.friends.push(newFriendRequest);
 		user.save((err, user) => {
@@ -1174,8 +1231,8 @@ app.get('/sendFriendRequest/:id', requireLogin, (req, res) => {
 				throw err;
 			}
 			if (user) {
-				res.render('friends/friendRequest', {
-					title: 'Friend Requests',
+				res.render("friends/friendRequest", {
+					title: "Friend Requests",
 					newFriend: user
 				});
 			}
@@ -1184,88 +1241,89 @@ app.get('/sendFriendRequest/:id', requireLogin, (req, res) => {
 });
 
 //show friend requests received
-app.get('/showFriendRequest/:id', requireLogin, (req, res) => {
+app.get("/showFriendRequest/:id", requireLogin, (req, res) => {
 	User.findOne({
 		_id: req.params.id
 	}).then((userRequest) => {
-		res.render('friends/showFriendRequest', {
-			title: 'Friend Requests',
+		res.render("friends/showFriendRequest", {
+			title: "Friend Requests",
 			newFriend: userRequest
 		});
 	});
 });
 
 //Accept friend request
-app.get('/acceptFriend/:id', requireLogin, (req, res) => {
+app.get("/acceptFriend/:id", requireLogin, (req, res) => {
 	User.findById({
 			_id: req.user._id
-		}).populate('friends.friend')
+		})
+		.populate("friends.friend")
 		.then((user) => {
 			user.friends.filter((friend) => {
-				if (friend._id = req.params.id) {
+				if ((friend._id = req.params.id)) {
 					friend.isFriend = true;
 
-					user.save()
-						.then(() => {
-							User.findById({
-								_id: req.params.id
-							}).then((requestSender) => {
-								let newFriend = {
-									friend: req.user._id,
-									isFriend: true
-								}
+					user.save().then(() => {
+						User.findById({
+							_id: req.params.id
+						}).then((requestSender) => {
+							let newFriend = {
+								friend: req.user._id,
+								isFriend: true
+							};
 
-								requestSender.friends.push(newFriend);
-								requestSender.save()
-									.then(() => {
-										User.findById({
-												_id: req.user._id
-											}).populate('friends.friend')
-											.sort({
-												date: 'desc'
-											})
-											.then((user) => {
-												res.render('friends/friendAccepted', {
-													title: "Friends",
-													userInfo: user
-												});
-											});
+							requestSender.friends.push(newFriend);
+							requestSender.save().then(() => {
+								User.findById({
+										_id: req.user._id
 									})
-							})
+									.populate("friends.friend")
+									.sort({
+										date: "desc"
+									})
+									.then((user) => {
+										res.render("friends/friendAccepted", {
+											title: "Friends",
+											userInfo: user
+										});
+									});
+							});
 						});
+					});
 				} else {
-					res.render('friends/404', {
+					res.render("friends/404", {
 						title: "Page Not Found"
 					});
 				}
 			});
-		}).catch((err) => {
+		})
+		.catch((err) => {
 			console.log(err);
 		});
 });
 
 //decline friend request
-app.get('/declineFriend/:id', requireLogin, (req, res) => {
+app.get("/declineFriend/:id", requireLogin, (req, res) => {
 	User.findById({
 			_id: req.user._id
-		}).populate('friends.friend')
+		})
+		.populate("friends.friend")
 		.then((user) => {
 			user.friends.filter((friend) => {
-				if (friend._id = req.params.id) {
+				if ((friend._id = req.params.id)) {
 					user.friends.pop(friend);
-					user.save()
-						.then(() => {
-							User.findOne({
-								_id: req.params.id
-							}).then((friend) => {
-								res.render('friends/friendDeclined', {
-									title: "Friend Requests",
-									friend: friend
-								});
-							})
-						})
+					user.save().then(() => {
+						User.findOne({
+							_id: req.params.id
+						}).then((friend) => {
+							res.render("friends/friendDeclined", {
+								title: "Friend Requests",
+								friend: friend
+							});
+						});
+					});
 				} else {
-					res.render('friends/404', {
+					res.render("friends/404", {
 						title: "Page Not Found"
 					});
 				}
@@ -1274,12 +1332,13 @@ app.get('/declineFriend/:id', requireLogin, (req, res) => {
 });
 
 // show all friends
-app.get('/friends', requireLogin, (req, res) => {
+app.get("/friends", requireLogin, (req, res) => {
 	User.findById({
 			_id: req.user._id
-		}).populate('friends.friend')
+		})
+		.populate("friends.friend")
 		.then((user) => {
-			res.render('friends/friends', {
+			res.render("friends/friends", {
 				title: "Friends",
 				userFriends: user
 			});
@@ -1287,9 +1346,9 @@ app.get('/friends', requireLogin, (req, res) => {
 });
 
 // page not found
-app.get('/404', (req, res) => {
-	res.render('friends/404', {
-		title: '404'
+app.get("/404", (req, res) => {
+	res.render("friends/404", {
+		title: "404"
 	});
 });
 
@@ -1297,7 +1356,7 @@ app.get('/404', (req, res) => {
 app.get("/logout", (req, res) => {
 	User.findById({
 		_id: req.user._id
-	}).then(user => {
+	}).then((user) => {
 		user.online = false;
 		user.save((err, user) => {
 			if (err) {
@@ -1324,7 +1383,7 @@ app.post("/contactUs", (req, res) => {
 		if (err) {
 			throw err;
 		} else {
-			Message.find({}).then(messages => {
+			Message.find({}).then((messages) => {
 				if (messages) {
 					res.render("newmessage", {
 						title: "Sent",
@@ -1340,7 +1399,139 @@ app.post("/contactUs", (req, res) => {
 	});
 });
 
+//connect socketio
+const server = http.createServer(app);
+const io = socket(server);
+
+io.on("connection", (socketio) => {
+	console.log("Server is connected to client");
+
+	//emit event
+	// socketio.emit('newMessage', {
+	// 	title: 'New Message',
+	// 	body: 'Hello World',
+	// 	sender: 'Vesingh'
+	// });
+
+	//listen to event (ID)
+	socketio.on('ID', (ID) => {
+		//console.log('User Id: ', ID);
+		if (ID.ID == null) {
+			console.log('No currently logged in user');
+			return;
+		}
+
+		User.findOne({
+			_id: ID.ID
+		}).then((currentUser) => {
+			User.findOne({
+				email: 'admin@matcha.com'
+			}).then((admin) => {
+				if (admin) {
+					Chat.findOne({
+							sender: currentUser._id,
+							receiver: admin._id
+						}).populate('sender')
+						.populate('receiver')
+						.populate('chats.senderName')
+						.populate('chats.receiverName')
+						.then((chat) => {
+							if (chat) {
+								if (chat.receiverRead === false) {
+									chat.receiverRead = true;
+									chat.senderRead = true;
+									chat.save((err, chat) => {
+										if (err) {
+											throw err;
+										}
+										if (chat) {
+											console.log('Admin has stopped replying');
+										}
+									})
+								}
+							} else {
+								Chat.findOne({
+										sender: admin._id,
+										receiver: currentUser._id
+									}).populate('sender')
+									.populate('receiver')
+									.populate('chats.senderName')
+									.populate('chats.receiverName')
+									.then((chat) => {
+										if (chat) {
+											if (chat.senderRead === false) {
+												chat.receiverRead = true;
+												chat.senderRead = true;
+												chat.save((err, chat) => {
+													if (err) {
+														throw err;
+													}
+													if (chat) {
+														console.log('Admin received message, chat stopped');
+													}
+												})
+											}
+										} else {
+											const chat = {
+												sender: admin._id,
+												receiver: currentUser._id,
+												senderRead: true
+											}
+
+											new Chat(chat).save((err, chat) => {
+												if (err) {
+													throw err;
+												}
+												if (chat) {
+													const newChat = {
+														senderName: admin._id,
+														senderMessage: 'Welcome to Matcha. We hope you enjoy you experience here. Please feel free to message us with any feedback / issues you may have with Matcha',
+														receiverName: currentUser._id,
+														senderRead: true
+													}
+
+													chat.chats.push(newChat);
+													chat.save((err, chat) => {
+														if (err) {
+															throw err;
+														}
+														if (chat) {
+															Chat.findOne({
+																	_id: chat._id
+																}).populate('sender')
+																.populate('receiver')
+																.populate('chats.senderName')
+																.populate('chats.receiverName')
+																.sort({
+																	date: 'desc'
+																});
+														}
+													});
+												}
+											});
+										}
+									});
+							}
+						}).catch((err) => {
+							console.log(err)
+						});
+				} else {
+					console.log('Unable to find Admin from MongoDB');
+				}
+			}).catch((err) => {
+				console.log(err)
+			});
+		}).catch((err) => {
+			console.log(err)
+		});
+	});
+});
+
+io.on("disconnection", () => {
+	console.log("Server is disconnected from client");
+});
+
 // which port the server is on
-app.listen(port, () => {
+server.listen(port, () => {
 	console.log(`Server is running on port ${port}`);
 });
